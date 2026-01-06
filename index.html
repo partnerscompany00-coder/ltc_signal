@@ -40,7 +40,7 @@
         @keyframes antenna-vibrate {
             0% { transform: rotate(0deg) scale(1); }
             20% { transform: rotate(-3deg) scale(1.05); filter: drop-shadow(0 0 8px var(--signal-cyan)); }
-            40% { transform: rotate(5deg) scale(1); }
+            40% { transform: rotate(5deg) scale(1.05); }
             100% { transform: rotate(0deg); }
         }
         .antenna-active { animation: antenna-vibrate 0.6s infinite; }
@@ -91,24 +91,49 @@
             color: var(--signal-cyan); margin-bottom: 8px; letter-spacing: 1px;
         }
 
-        /* 폼 요소 스타일링 */
-        select, input[type="date"], input[type="tel"] {
+        /* 폼 요소 높이 및 디자인 통일 */
+        .standard-input {
             background-color: #0f172a; color: white; border: 2px solid #334155;
-            padding: 1rem; border-radius: 1rem; font-size: 1.2rem; font-weight: bold;
+            height: 4rem; padding: 0 1rem; border-radius: 1rem; font-size: 1.3rem; font-weight: bold;
             width: 100%; outline: none; transition: border-color 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            box-sizing: border-box;
         }
-        select:focus, input:focus { border-color: var(--signal-cyan); }
+        .standard-input:focus { border-color: var(--signal-cyan); }
+        
+        select.standard-input { 
+            appearance: none; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); 
+            background-repeat: no-repeat; 
+            background-position: right 1rem center; 
+            background-size: 1.5rem; 
+        }
 
-        /* 성별 선택 버튼 */
+        /* 이름 입력 전용 컨테이너 */
+        .name-input-container {
+            position: relative; background: rgba(30, 41, 59, 0.5);
+            border: 2px dashed rgba(34, 211, 238, 0.3); border-radius: 1.5rem;
+            padding: 1.2rem; box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* 생년월일/지역 3단 가로 정렬 */
+        .form-row { display: flex; gap: 0.5rem; }
+        .form-row > * { flex: 1; }
+
+        /* 성별 선택 버튼 디자인 수정 */
         .gender-group { display: flex; gap: 0.5rem; }
         .btn-gender {
             flex: 1; background: #0f172a; border: 2px solid #334155;
-            padding: 1rem; border-radius: 1rem; font-size: 1.2rem; font-weight: 800;
+            height: 4rem; border-radius: 1rem; font-size: 1.3rem; font-weight: 800;
             color: #64748b; transition: all 0.2s;
         }
         .btn-gender.active { border-color: var(--signal-cyan); color: var(--signal-cyan); background: rgba(0, 242, 255, 0.1); }
 
-        /* 동의 영역 */
+        /* 전화번호 입력 디자인 */
+        .phone-group { display: flex; align-items: center; gap: 0.5rem; }
+        .fixed-010 { width: 80px; height: 4rem; background: #1e293b; color: #94a3b8; border: 2px dashed #334155; border-radius: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; }
+        .phone-input { flex: 1; text-align: center; font-size: 1.5rem; letter-spacing: 2px; }
+
         .consent-box { background: rgba(255,255,255,0.05); border-radius: 1rem; padding: 1rem; margin-top: 1rem; }
         .consent-item { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; }
         .consent-item input { margin-top: 0.3rem; width: 1.2rem; height: 1.2rem; }
@@ -117,14 +142,10 @@
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; flex-direction: column; padding: 2rem; overflow-y: auto; }
         .modal-content { background: #1e293b; padding: 1.5rem; border-radius: 1.5rem; font-size: 0.85rem; line-height: 1.6; color: #cbd5e1; }
 
-        /* 예상 보험료 결과 카드 */
         .premium-card {
             background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 2px solid var(--signal-cyan);
-            border-radius: 2rem;
-            padding: 2rem;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
-            margin-bottom: 2rem;
+            border: 2px solid var(--signal-cyan); border-radius: 2rem;
+            padding: 2rem; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); margin-bottom: 2rem;
         }
     </style>
 </head>
@@ -147,15 +168,11 @@
                 <div class="radio-display">
                     <p id="msg-init" class="text-header font-black text-center"></p>
                     <div class="wave-container">
-                        <svg class="wave-svg" viewBox="0 0 400 60">
-                            <path id="freq-path" d="M0 30 L 400 30" />
-                        </svg>
+                        <svg class="wave-svg" viewBox="0 0 400 60"><path id="freq-path" d="M0 30 L 400 30" /></svg>
                     </div>
                 </div>
             </div>
-            <button onclick="goToStep(2)" class="btn-radio bg-cyan-600 border-none py-6">
-                무전 응답하기 <i class="fas fa-microphone ml-2"></i>
-            </button>
+            <button onclick="goToStep(2)" class="btn-radio bg-cyan-600 border-none py-6">무전 응답하기 <i class="fas fa-microphone ml-2"></i></button>
         </div>
     </div>
 
@@ -167,22 +184,26 @@
                 <p class="text-body text-slate-400 leading-snug">미래로부터 긴급 무전이 수신되었습니다.<br>교신을 위해 정보를 입력해 주세요.</p>
             </div>
             <div class="space-y-6">
-                <div class="space-y-2">
-                    <label class="text-slate-500 text-sm font-bold ml-1 text-center block">성함</label>
-                    <input type="text" id="uName" placeholder="성함을 입력하세요" class="text-center">
+                <div class="name-input-container space-y-3">
+                    <label class="text-cyan-400 text-[10px] font-black block text-center italic tracking-widest uppercase">Target Identity</label>
+                    <input type="text" id="uName" placeholder="성함을 입력하세요" class="standard-input border-none bg-slate-900/80 text-center">
                 </div>
-                <div class="space-y-2">
+                
+                <div class="space-y-3">
                     <label class="text-slate-500 text-sm font-bold ml-1 text-center block">생년월일</label>
-                    <input type="date" id="uDob" class="text-center">
+                    <div class="form-row">
+                        <select id="uYear" class="standard-input"><option value="">년도</option></select>
+                        <select id="uMonth" class="standard-input"><option value="">월</option></select>
+                        <select id="uDay" class="standard-input"><option value="">일</option></select>
+                    </div>
                 </div>
+
                 <div class="bg-orange-500/10 p-6 rounded-3xl border border-orange-500/30">
                     <p class="text-orange-400 text-lg font-bold text-center">
                         <i class="fas fa-microchip mr-1"></i> Gemini AI가 당신의 데이터를 분석하여<br>미래 무전 주파수를 연결합니다.
                     </p>
                 </div>
-                <button id="startBtn" onclick="startMission()" class="w-full bg-cyan-600 py-6 rounded-2xl text-2xl font-black shadow-2xl mt-4">
-                    ✨ AI 미래 무전 연결
-                </button>
+                <button id="startBtn" onclick="startMission()" class="w-full bg-cyan-600 py-6 rounded-2xl text-2xl font-black shadow-2xl mt-4">✨ AI 미래 무전 연결</button>
             </div>
         </div>
     </div>
@@ -212,12 +233,12 @@
         let currentIdx = 0;
         let userHistory = [];
         let isTyping = false;
-        let userGender = ""; // 남성 / 여성
+        let userGender = "";
 
         const regionData = {
             "서울": ["강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"],
-            "경기": ["가평군", "고양시 덕양구", "고양시 일산동구", "고양시 일산서구", "과천시", "광명시", "광주시", "구리시", "군포시", "김포시", "남양주시", "동두천시", "부천시", "성남시 수정구", "성남시 중원구", "성남시 분당구", "수원시 장안구", "수원시 권선구", "수원시 팔달구", "수원시 영통구", "시흥시", "안산시 상록구", "안산시 단원구", "안성시", "안양시 만안구", "안양시 동안구", "양주시", "양평군", "여주시", "연천군", "오산시", "용인시 처인구", "용인시 기흥구", "용인시 수지구", "의왕시", "의정부시", "이천시", "파주시", "평택시", "포천시", "하남시", "화성시"],
-            "인천": ["강화군", "계양구", "미추홀구", "남동구", "동구", "부평구", "서구", "연수구", "옹진군", "중구"],
+            "경기": ["가평군", "과천시", "광명시", "광주시", "구리시", "군포시", "김포시", "남양주시", "동두천시", "부천시", "성남시", "수원시", "시흥시", "안산시", "안성시", "안양시", "양주시", "양평군", "여주시", "연천군", "오산시", "용인시", "의왕시", "의정부시", "이천시", "파주시", "평택시", "포천시", "하남시", "화성시"],
+            "인천": ["강화군", "계양구", "남동구", "동구", "부평구", "서구", "연수구", "옹진군", "중구"],
             "부산": ["강서구", "금정구", "기장군", "남구", "동구", "동래구", "부산진구", "북구", "사상구", "사하구", "서구", "수영구", "연제구", "영도구", "중구", "해운대구"],
             "대구": ["남구", "달서구", "달성군", "동구", "북구", "서구", "수성구", "중구", "군위군"],
             "광주": ["광산구", "남구", "동구", "북구", "서구"],
@@ -225,16 +246,15 @@
             "울산": ["남구", "동구", "북구", "울주군", "중구"],
             "세종": ["세종특별자치시"],
             "강원": ["강릉시", "고성군", "동해시", "삼척시", "속초시", "양구군", "양양군", "영월군", "원주시", "인제군", "정선군", "철원군", "춘천시", "태백시", "평창군", "홍천군", "화천군", "횡성군"],
-            "충북": ["괴산군", "단양군", "보은군", "영동군", "옥천군", "음성군", "제천시", "증평군", "진천군", "청주시 상당구", "청주시 서원구", "청주시 흥덕구", "청주시 청원구", "충주시"],
-            "충남": ["계룡시", "공주시", "금산군", "논산시", "당진시", "보령시", "부여군", "서산시", "서천군", "아산시", "예산군", "천안시 동남구", "천안시 서북구", "청양군", "태안군", "홍성군"],
-            "전북": ["고창군", "군산시", "김제시", "남원시", "무주군", "부안군", "순창군", "완주군", "익산시", "임실군", "장수군", "전주시 완산구", "전주시 덕진구", "진안군"],
+            "충북": ["괴산군", "단양군", "보은군", "영동군", "옥천군", "음성군", "제천시", "증평군", "진천군", "청주시", "충주시"],
+            "충남": ["계룡시", "공주시", "금산군", "논산시", "당진시", "보령시", "부여군", "서산시", "서천군", "아산시", "예산군", "천안시", "청양군", "태안군", "홍성군"],
+            "전북": ["고창군", "군산시", "김제시", "남원시", "무주군", "부안군", "순창군", "완주군", "익산시", "임실군", "장수군", "전주시", "진안군"],
             "전남": ["강진군", "고흥군", "곡성군", "광양시", "구례군", "나주시", "담양군", "목포시", "무안군", "보성군", "순천시", "신안군", "여수시", "영광군", "영암군", "완도군", "장성군", "장흥군", "진도군", "함평군", "해남군", "화순군"],
-            "경북": ["경산시", "경주시", "고령군", "구미시", "김천시", "문경시", "봉화군", "상주시", "성주군", "안동시", "영덕군", "영양군", "영주시", "영천시", "예천군", "울릉군", "울진군", "의성군", "청도군", "청송군", "칠곡군", "포항시 남구", "포항시 북구"],
-            "경남": ["거제시", "거창군", "고성군", "김해시", "남해군", "밀양시", "사천시", "산청군", "양산시", "의령군", "진주시", "창녕군", "창원시 의창구", "창원시 성산구", "창원시 마산합포구", "창원시 마산회원구", "창원시 진해구", "통영시", "하동군", "함안군", "함양군", "합천군"],
+            "경북": ["경산시", "경주시", "고령군", "구미시", "김천시", "문경시", "봉화군", "상주시", "성주군", "안동시", "영덕군", "영양군", "영주시", "영천시", "예천군", "울릉군", "울진군", "의성군", "청도군", "청송군", "칠곡군", "포항시"],
+            "경남": ["거제시", "거창군", "고성군", "김해시", "남해군", "밀양시", "사천시", "산청군", "양산시", "의령군", "진주시", "창녕군", "창원시", "통영시", "하동군", "함안군", "함양군", "합천군"],
             "제주": ["제주시", "서귀포시"]
         };
 
-        // 주파수 애니메이션 (직선형)
         let waveFrame = 0;
         function animateWave() {
             const paths = document.querySelectorAll('.dynamic-path, #freq-path');
@@ -267,6 +287,11 @@
 
         window.onload = () => {
             typeEffect('msg-init', "치지직 치지직... 아!아! 들리십니까?\n미래의 당신입니다.\n재가장기요양보험에 대해 알려줄 게 있어요.");
+            const yS = document.getElementById('uYear'); const mS = document.getElementById('uMonth'); const dS = document.getElementById('uDay');
+            const cY = new Date().getFullYear();
+            for(let y=cY-15; y>=1930; y--) { const o = document.createElement('option'); o.value=y; o.innerText=y+"년"; yS.appendChild(o); }
+            for(let m=1; m<=12; m++) { const o = document.createElement('option'); o.value=m; o.innerText=m+"월"; mS.appendChild(o); }
+            for(let d=1; d<=31; d++) { const o = document.createElement('option'); o.value=d; o.innerText=d+"일"; dS.appendChild(o); }
         };
 
         async function callGemini(prompt, systemMsg = "당신은 드라마 '시그널'의 미래 화자입니다. 애틋하고 긴박하며 따뜻하게 한국어로 조언하세요.") {
@@ -292,25 +317,18 @@
 
         async function startMission() {
             userName = document.getElementById('uName').value.trim();
-            const uDob = document.getElementById('uDob').value;
-            if(!userName || !uDob) return alert("교신을 위해 성함과 생년월일이 꼭 필요합니다.");
-            
-            const birthDate = new Date(uDob);
+            const uY = document.getElementById('uYear').value;
+            const uM = document.getElementById('uMonth').value;
+            const uD = document.getElementById('uDay').value;
+            if(!userName || !uY || !uM || !uD) return alert("교신을 위해 성함과 생년월일을 모두 선택해 주세요.");
             const today = new Date();
-            userAge = today.getFullYear() - birthDate.getFullYear();
-            
-            const btn = document.getElementById('startBtn');
-            btn.innerHTML = `✨ 신호 해독 중...`; btn.disabled = true;
-
+            userAge = today.getFullYear() - parseInt(uY);
+            const btn = document.getElementById('startBtn'); btn.innerHTML = `✨ 신호 해독 중...`; btn.disabled = true;
             const currentYear = new Date().getFullYear();
             if (userAge < 65) targetAge = 67; else targetAge = userAge + 3;
             futureYear = currentYear + (targetAge - userAge);
-            
-            callName = Josa.nameOnly(userName);
-            josa = Josa.get(callName, "아야");
-
+            callName = Josa.nameOnly(userName); josa = Josa.get(callName, "아야");
             const aiPrompt = `사용자 ${callName}${josa}(${userAge}세)에게 ${futureYear}년의 ${targetAge}세 된 자신이 보내는 첫 무전입니다. 아주 절박하지만 따뜻하게, 재가장기요양보험 준비를 안 해서 후회한다는 내용을 2줄 이내로 한국어로 작성하세요. "지직- ${callName}${josa}..."로 시작하세요.`;
-            
             renderNarrative();
             callGemini(aiPrompt).then(msg => { if(msg) scenario[0].customQ = msg; });
         }
@@ -337,34 +355,24 @@
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             updateProgress();
             const displayQ = (currentIdx === 0 && data.customQ) ? data.customQ : data.q(userName, futureYear, targetAge, josa);
-
             const html = `
                 <div class="panel active">
                     <div class="max-w-wrap flex flex-col py-6">
                         <div class="radio-display mb-6">
                             <div class="ai-badge"><i class="fas fa-signal mr-1"></i> SIGNAL DECODED</div>
                             <div id="type-q" class="text-header text-center"></div>
-                            <div class="wave-container">
-                                <svg class="wave-svg" viewBox="0 0 400 60">
-                                    <path id="freq-path-${currentIdx}" class="dynamic-path" d="M0 30 L 400 30" />
-                                </svg>
-                            </div>
+                            <div class="wave-container"><svg class="wave-svg" viewBox="0 0 400 60"><path id="freq-path-${currentIdx}" class="dynamic-path" d="M0 30 L 400 30" /></svg></div>
                         </div>
-                        <div id="choice-btns" class="space-y-3">
-                            ${data.isFinal ? renderFinalForm() : renderAnsBtns(data.a)}
-                        </div>
+                        <div id="choice-btns" class="space-y-3">${data.isFinal ? renderFinalForm() : renderAnsBtns(data.a)}</div>
                         <div id="reaction-box" class="hidden mt-6">
                             <div class="bg-slate-900 border-l-8 border-cyan-500 p-5 rounded-r-2xl shadow-xl">
                                 <p class="text-cyan-400 font-black text-lg mb-2">${futureYear}년의 당신(${targetAge}세):</p>
                                 <p id="type-r" class="text-body leading-snug"></p>
                             </div>
-                            <button onclick="goNext()" class="btn-radio bg-cyan-600 border-none py-6 mt-8 w-full">
-                                다음 무전 듣기 <i class="fas fa-chevron-right ml-2"></i>
-                            </button>
+                            <button onclick="goNext()" class="btn-radio bg-cyan-600 border-none py-6 mt-8 w-full">다음 무전 듣기 <i class="fas fa-chevron-right ml-2"></i></button>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
             container.innerHTML = html;
             window.scrollTo({ top: 0, behavior: 'instant' });
             typeEffect('type-q', displayQ);
@@ -376,162 +384,101 @@
             fetchAIAdvice();
             return `
                 <div class="space-y-4">
-                    <div class="flex gap-2">
-                        <select id="sido" onchange="updateSigungu()">
-                            <option value="">시/도 (선택)</option>
+                    <div class="form-row">
+                        <select id="sido" class="standard-input" onchange="updateSigungu()">
+                            <option value="">시/도</option>
                             ${Object.keys(regionData).map(s => `<option value="${s}">${s}</option>`).join('')}
                         </select>
-                        <select id="sigungu">
-                            <option value="">시/군/구 (선택)</option>
+                        <select id="sigungu" class="standard-input">
+                            <option value="">시/군/구</option>
                         </select>
                     </div>
                     <div class="gender-group">
                         <button type="button" onclick="setGender('남성')" id="genM" class="btn-gender">남성</button>
                         <button type="button" onclick="setGender('여성')" id="genF" class="btn-gender">여성</button>
                     </div>
-                    <input type="tel" id="phone" placeholder="휴대폰 번호 (-없이)" class="text-center">
-                    
-                    <div class="consent-box">
-                        <div class="consent-item">
-                            <input type="checkbox" id="agree1">
-                            <label for="agree1">[필수] 개인정보 수집 및 이용 동의</label>
-                            <span class="view-detail" onclick="openPrivacy(1)">자세히 보기</span>
-                        </div>
-                        <div class="consent-item">
-                            <input type="checkbox" id="agree2">
-                            <label for="agree2">[필수] 제3자 제공 동의</label>
-                            <span class="view-detail" onclick="openPrivacy(2)">자세히 보기</span>
-                        </div>
+                    <div class="phone-group">
+                        <div class="fixed-010">010</div>
+                        <input type="tel" id="p_mid" maxlength="4" placeholder="1234" class="standard-input phone-input" oninput="autoFocus(this, 'p_last')">
+                        <input type="tel" id="p_last" maxlength="4" placeholder="5678" class="standard-input phone-input">
                     </div>
-
+                    <div class="consent-box">
+                        <div class="consent-item"><input type="checkbox" id="agree1"><label for="agree1" class="text-xs">[필수] 개인정보 수집 및 이용 동의</label><span class="view-detail" onclick="openPrivacy(1)">보기</span></div>
+                        <div class="consent-item"><input type="checkbox" id="agree2"><label for="agree2" class="text-xs">[필수] 제3자 제공 동의</label><span class="view-detail" onclick="openPrivacy(2)">보기</span></div>
+                    </div>
                     <div id="ai-report" class="p-5 bg-orange-950/40 border border-orange-500/50 rounded-2xl">
                         <p class="text-orange-400 font-black text-sm mb-2">✨ AI 미래 생존 리포트 분석 중...</p>
                         <p id="ai-advice-text" class="text-xs text-white leading-relaxed">신호를 분석하고 있습니다...</p>
                     </div>
-                    <button onclick="submitMission()" class="w-full bg-orange-600 py-6 rounded-2xl text-2xl font-black shadow-xl animate-bounce">
-                        예상 보험료 확인하기
-                    </button>
-                </div>
-            `;
+                    <button onclick="submitMission()" class="w-full bg-orange-600 py-6 rounded-2xl text-2xl font-black shadow-xl animate-bounce">예상 보험료 확인하기</button>
+                </div>`;
         }
 
-        function setGender(g) {
-            userGender = g;
-            document.getElementById('genM').classList.toggle('active', g === '남성');
-            document.getElementById('genF').classList.toggle('active', g === '여성');
-        }
-
+        function autoFocus(cur, nextId) { if(cur.value.length >= 4) document.getElementById(nextId).focus(); }
+        function setGender(g) { userGender = g; document.getElementById('genM').classList.toggle('active', g === '남성'); document.getElementById('genF').classList.toggle('active', g === '여성'); }
         function updateSigungu() {
-            const sido = document.getElementById('sido').value;
-            const sigunguSelect = document.getElementById('sigungu');
-            sigunguSelect.innerHTML = '<option value="">시/군/구 (선택)</option>';
-            if (sido && regionData[sido]) {
-                regionData[sido].forEach(s => {
-                    const opt = document.createElement('option');
-                    opt.value = s; opt.innerText = s;
-                    sigunguSelect.appendChild(opt);
-                });
-            }
+            const sido = document.getElementById('sido').value; const sS = document.getElementById('sigungu');
+            sS.innerHTML = '<option value="">시/군/구</option>';
+            if (sido && regionData[sido]) regionData[sido].forEach(s => { const o = document.createElement('option'); o.value = s; o.innerText = s; sS.appendChild(o); });
         }
-
-        function openPrivacy(type) {
-            const modal = document.getElementById('privacyModal');
-            const content = document.getElementById('modalContent');
-            const texts = {
-                1: `[개인정보 수집 및 이용 동의]\n\n1. 수집주체: (주)파트너스컴퍼니\n2. 수집항목: 이름, 생년월일, 연락처, 거주지역, 성별\n3. 수집목적: 보험상품 안내 및 가입 상담, 이벤트 정보 제공\n4. 보유기간: 목적 달성 후 1년 또는 정보주체의 삭제 요청 시까지\n\n귀하는 본 동의를 거부할 수 있으나, 거부 시 상담 서비스 이용이 제한됩니다.`,
-                2: `[제3자 제공 동의]\n\n1. 제공받는 자: 메타리치 파트너스지사\n2. 제공항목: 이름, 생년월일, 연락처, 거주지역, 성별\n3. 제공목적: 맞춤형 보험 설계 및 가입 상담 전문 서비스 제공\n4. 보유기간: 제3자의 목적 달성 시까지\n\n본 제공 동의는 전문적인 상담 서비스를 위해 필수적입니다.`
+        function openPrivacy(t) {
+            const m = document.getElementById('privacyModal'); const c = document.getElementById('modalContent');
+            const txt = {
+                1: `[개인정보 수집 및 이용 동의]\n\n1. 수집주체: (주)파트너스컴퍼니\n2. 수집항목: 이름, 생년월일, 연락처, 거주지역, 성별\n3. 수집목적: 보험상품 안내 및 가입 상담, 이벤트 정보 제공\n4. 보유기간: 목적 달성 후 1년 또는 정보주체의 삭제 요청 시까지`,
+                2: `[제3자 제공 동의]\n\n1. 제공받는 자: 메타리치 파트너스지사\n2. 제공항목: 이름, 생년월일, 연락처, 거주지역, 성별\n3. 제공목적: 맞춤형 보험 설계 및 가입 상담 전문 서비스 제공\n4. 보유기간: 제3자의 목적 달성 시까지`
             };
-            content.innerText = texts[type];
-            modal.style.display = 'flex';
+            c.innerText = txt[t]; m.style.display = 'flex';
         }
         function closeModal() { document.getElementById('privacyModal').style.display = 'none'; }
-
         async function fetchAIAdvice() {
-            const historyStr = userHistory.slice(-3).map(h => h.a).join(', ');
-            const prompt = `사용자 ${callName}의 최근 병력 답변: ${historyStr}. 이 결과를 분석해서 미래에서 온 자신처럼 따뜻하게 보험 가입 팁을 한 문장으로 조언해줘.`;
-            const advice = await callGemini(prompt, "당신은 AI 보험 전문가입니다. 2026년의 사용자에게 희망을 주는 조언을 하세요.");
-            const target = document.getElementById('ai-advice-text');
-            if(target) target.innerText = advice || "현재 정보를 바탕으로 전문가가 정밀 분석 리포트를 준비 중입니다.";
+            const h = userHistory.slice(-3).map(h => h.a).join(', ');
+            const p = `사용자 ${callName}의 최근 병력 답변: ${h}. 이 결과를 분석해서 미래에서 온 자신처럼 따뜻하게 보험 가입 팁을 한 문장으로 조언해줘.`;
+            const adv = await callGemini(p, "당신은 AI 보험 전문가입니다. 2026년의 사용자에게 희망을 주는 조언을 하세요.");
+            if(document.getElementById('ai-advice-text')) document.getElementById('ai-advice-text').innerText = adv || "신호 해독 완료. 전문가가 정밀 리포트를 준비 중입니다.";
         }
-
-        function handleAns(idx, text) {
-            userHistory.push({ q: scenario[currentIdx].q.toString(), a: text });
-            document.getElementById('choice-btns').classList.add('hidden');
-            document.getElementById('reaction-box').classList.remove('hidden');
-            typeEffect('type-r', scenario[currentIdx].r(callName, josa));
-        }
-
+        function handleAns(idx, text) { userHistory.push({ q: scenario[currentIdx].q.toString(), a: text }); document.getElementById('choice-btns').classList.add('hidden'); document.getElementById('reaction-box').classList.remove('hidden'); typeEffect('type-r', scenario[currentIdx].r(callName, josa)); }
         function goNext() { currentIdx++; renderNarrative(); }
-
-        function typeEffect(id, text) {
-            const el = document.getElementById(id);
-            if(!el) return; isTyping = true; let i = 0; el.innerHTML = "";
-            function typing() {
-                if (i < text.length) { el.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i); i++; setTimeout(typing, 25 + Math.random() * 20); }
-                else { el.innerHTML += '<span class="cursor"></span>'; isTyping = false; }
-            }
-            typing();
-        }
-
+        function typeEffect(id, text) { const el = document.getElementById(id); if(!el) return; isTyping = true; let i = 0; el.innerHTML = ""; function typing() { if (i < text.length) { el.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i); i++; setTimeout(typing, 25 + Math.random() * 20); } else { el.innerHTML += '<span class="cursor"></span>'; isTyping = false; } } typing(); }
         function showStatic() { document.getElementById('static-screen').style.display = 'flex'; }
         function hideStatic() { document.getElementById('static-screen').style.display = 'none'; }
         function updateProgress() { document.getElementById('pBar').style.width = ((currentIdx + 1) / scenario.length * 100) + "%"; }
 
-        function calculatePremium() {
-            let pValue = "상담 시 안내";
-            if(userGender === "남성") {
-                if(userAge >= 40 && userAge < 50) pValue = "5만원대";
-                else if(userAge >= 50 && userAge < 60) pValue = "6만원대";
-                else if(userAge >= 60 && userAge < 65) pValue = "7만원대";
-            } else if(userGender === "여성") {
-                if(userAge >= 40 && userAge < 50) pValue = "7만원대";
-                else if(userAge >= 50 && userAge < 60) pValue = "8만원대";
-                else if(userAge >= 60) pValue = "9만원대";
-            }
-            return pValue;
-        }
-
         function submitMission() {
-            const sido = document.getElementById('sido').value;
-            const sigungu = document.getElementById('sigungu').value;
-            const phone = document.getElementById('phone').value.trim();
-            const a1 = document.getElementById('agree1').checked;
-            const a2 = document.getElementById('agree2').checked;
-
-            if(!sido || !sigungu) return alert("거주 지역을 선택해 주세요!");
+            const s = document.getElementById('sido').value; const sg = document.getElementById('sigungu').value;
+            const pm = document.getElementById('p_mid').value; const pl = document.getElementById('p_last').value;
+            const a1 = document.getElementById('agree1').checked; const a2 = document.getElementById('agree2').checked;
+            if(!s || !sg) return alert("거주 지역을 선택해 주세요!");
             if(!userGender) return alert("성별을 선택해 주세요!");
-            if(!phone) return alert("리포트를 받으실 연락처를 남겨주세요!");
-            if(!a1 || !a2) return alert("개인정보 활용 및 제3자 제공에 동의해 주세요!");
+            if(pm.length < 4 || pl.length < 4) return alert("휴대폰 번호를 정확히 입력해 주세요!");
+            if(!a1 || !a2) return alert("개인정보 동의를 확인해 주세요!");
             
-            const premium = calculatePremium();
-            const n = Josa.nameOnly(userName);
-            const j = Josa.get(n, "아야");
-
+            let premium = "상담 시 안내";
+            if(userGender === "남성") {
+                if(userAge >= 40 && userAge < 50) premium = "5만원대"; else if(userAge >= 50 && userAge < 60) premium = "6만원대"; else if(userAge >= 60) premium = "7만원대";
+            } else {
+                if(userAge >= 40 && userAge < 50) premium = "7만원대"; else if(userAge >= 50 && userAge < 60) premium = "8만원대"; else if(userAge >= 60) premium = "9만원대";
+            }
+            const n = Josa.nameOnly(userName); const j = Josa.get(n, "아야");
             document.body.innerHTML = `
                 <div class="min-h-screen flex flex-col items-center justify-center p-8 text-center bg-slate-950 overflow-y-auto">
                     <div class="antenna-active w-24 h-24 bg-cyan-500 rounded-full flex items-center justify-center mb-8 shadow-2xl">
                         <i class="fas fa-check text-5xl text-white"></i>
                     </div>
-                    
                     <h2 class="text-2xl font-black mb-6">전송 성공!</h2>
-                    
                     <div class="premium-card w-full max-w-sm">
-                        <p class="text-slate-400 text-sm mb-2">${n}${j}의 미래 설계 결과</p>
+                        <p class="text-slate-400 text-sm mb-2">미래 설계 분석 결과</p>
                         <p class="text-white text-lg font-bold mb-4">재가요양 보험금 130만원 플랜</p>
                         <div class="h-px bg-cyan-500/30 w-full mb-4"></div>
                         <p class="text-slate-400 text-sm">예상 월 보험료</p>
                         <p class="text-cyan-400 text-4xl font-black mt-2">${premium}</p>
                     </div>
-
                     <p class="text-body text-slate-300 leading-relaxed mb-8">
-                        2026년의 ${n}${j}, 당신이 바꾼 미래 리포트가 안전하게 전송되었습니다.<br><br>
-                        곧 (주)파트너스컴퍼니의 전문가가 연락하여<br>
-                        AI 분석 기반의 상세 상담을 도와드릴게요.
+                        당신이 바꾼 미래 리포트가 안전하게 전송되었습니다.<br><br>
+                        곧, 메타리치 파트너스지사의 전문가가 연락하여<br>
+                        AI분석 기반의 상세 상담을 도와드릴게요.
                     </p>
-                    
                     <button onclick="location.reload()" class="text-slate-500 underline text-sm">처음으로 돌아가기</button>
-                </div>
-            `;
+                </div>`;
         }
     </script>
 </body>
