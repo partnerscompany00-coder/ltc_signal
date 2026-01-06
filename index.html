@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>시그널: AI가 해독한 미래의 무전</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+        :root {
+            --signal-cyan: #00f2ff;
+            --signal-orange: #ff9d00;
+            --bg-dark: #020617;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            font-family: 'Nanum Gothic', sans-serif;
+            margin: 0; padding: 0;
+            word-break: keep-all;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* 5060 가독성 폰트 */
+        .text-header { font-size: 1.65rem; line-height: 1.4; font-weight: 800; }
+        .text-body { font-size: 1.25rem; line-height: 1.5; font-weight: 700; }
+
+        .noise-layer {
+            position: fixed; inset: 0;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Static_Noise_Small.gif');
+            opacity: 0.03; pointer-events: none; z-index: 10;
+        }
+
+        @keyframes antenna-vibrate {
+            0% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(-3deg) scale(1.05); filter: drop-shadow(0 0 8px var(--signal-cyan)); }
+            40% { transform: rotate(3deg) scale(1); }
+            100% { transform: rotate(0deg); }
+        }
+        .antenna-active { animation: antenna-vibrate 0.6s infinite; }
+
+        /* 지지직거리는 직선 주파수(Static Jagged Line) 애니메이션 */
+        .wave-container {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: 1.2rem 0;
+            background: rgba(0,0,0,0.6);
+            border-radius: 0.8rem;
+            position: relative;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+        }
+        
+        .wave-svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--signal-cyan);
+            stroke-width: 1.5;
+            fill: none;
+            filter: drop-shadow(0 0 5px var(--signal-cyan));
+        }
+
+        /* 무전기 화면창 */
+        .radio-display {
+            background: #0f172a; border: 4px solid #334155; border-radius: 2.5rem;
+            padding: 2.2rem 1.5rem; box-shadow: inset 0 0 40px #000;
+            min-height: 220px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; margin-bottom: 1.5rem;
+        }
+
+        .btn-radio {
+            background: rgba(30, 41, 59, 0.95); border: 2.5px solid var(--signal-cyan);
+            border-radius: 1.5rem; padding: 1.4rem 1rem; width: 100%;
+            font-size: 1.4rem; font-weight: 800; margin-bottom: 1rem;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.5); transition: all 0.2s;
+            color: #fff; text-align: center;
+        }
+        .btn-radio:active { background: var(--signal-cyan); color: #000; transform: scale(0.96); }
+
+        .cursor {
+            display: inline-block; width: 10px; height: 1.3em;
+            background: var(--signal-cyan); margin-left: 4px;
+            animation: blink 0.8s infinite; vertical-align: middle;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .progress-top {
+            position: fixed; top: 0; left: 0; height: 10px;
+            background: var(--signal-cyan); z-index: 1000; transition: width 0.3s;
+            box-shadow: 0 0 15px var(--signal-cyan);
+        }
+
+        .panel { 
+            display: none; padding: 1.5rem; 
+            min-height: 100dvh; flex-direction: column; 
+            justify-content: flex-start; overflow-y: auto;
+        }
+        .panel.active { display: flex; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .max-w-wrap { max-width: 500px; margin: 0 auto; width: 100%; }
+
+        #static-screen {
+            position: fixed; inset: 0; background: #000; z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--signal-cyan);
+            padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 900;
+            color: var(--signal-cyan); margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise-layer"></div>
+    <div id="pBar" class="progress-top" style="width: 0%"></div>
+
+    <!-- Static Transition -->
+    <div id="static-screen">
+        <p class="text-white text-2xl font-black italic opacity-60">치지직... 신호 해독 중...</p>
+    </div>
+
+    <!-- Step 1: 최초 수신 연출 -->
+    <div id="step1" class="panel active">
+        <div class="max-w-wrap flex flex-col justify-center min-h-[90dvh]">
+            <div class="text-center mb-6">
+                <div class="w-32 h-32 bg-cyan-900/20 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-cyan-500 shadow-2xl">
+                    <i class="fas fa-tower-broadcast text-6xl text-cyan-400 antenna-active"></i>
+                </div>
+                <div class="radio-display">
+                    <p id="msg-init" class="text-header font-black text-center"></p>
+                    <div class="wave-container">
+                        <svg class="wave-svg" viewBox="0 0 400 60">
+                            <path id="freq-path" d="M0 30 L 400 30" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <button onclick="goToStep(2)" class="btn-radio bg-cyan-600 border-none py-6">
+                무전 응답하기 <i class="fas fa-microphone ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Step 2: 정보 입력 -->
+    <div id="step2" class="panel">
+        <div class="max-w-wrap flex flex-col py-6">
+            <div class="mb-10 text-center">
+                <h2 class="text-header mb-4">"누구신가요?"</h2>
+                <p class="text-body text-slate-400 leading-snug">미래로부터 긴급 무전이 수신되었습니다.<br>교신을 위해 정보를 입력해 주세요.</p>
+            </div>
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-slate-500 text-sm font-bold ml-1 text-center block">성함</label>
+                    <input type="text" id="uName" placeholder="성함을 입력하세요" class="w-full bg-slate-900 border-2 border-slate-700 p-5 rounded-2xl text-2xl font-bold outline-none focus:border-cyan-500 text-center">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-slate-500 text-sm font-bold ml-1 text-center block">현재 나이</label>
+                    <input type="number" id="uAge" placeholder="나이를 입력하세요" class="w-full bg-slate-900 border-2 border-slate-700 p-5 rounded-2xl text-2xl font-bold outline-none focus:border-cyan-500 text-center">
+                </div>
+                <div class="bg-orange-500/10 p-6 rounded-3xl border border-orange-500/30">
+                    <p class="text-orange-400 text-lg font-bold text-center">
+                        <i class="fas fa-microchip mr-1"></i> Gemini AI가 당신의 데이터를 분석하여<br>미래 무전 주파수를 연결합니다.
+                    </p>
+                </div>
+                <button id="startBtn" onclick="startMission()" class="w-full bg-cyan-600 py-6 rounded-2xl text-2xl font-black shadow-2xl mt-4">
+                    ✨ AI 미래 무전 연결
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="narrative-container" class="contents"></div>
+
+    <script>
+        const apiKey = ""; // Runtime provided
+        let userName = ""; 
+        let callName = ""; 
+        let josa = "";
+        let userAge = 0;
+        let futureYear = 2026;
+        let targetAge = 67;
+        let currentIdx = 0;
+        let userHistory = [];
+        let isTyping = false;
+
+        // 지지직거리는 직선 주파수 애니메이션 로직
+        let waveFrame = 0;
+        function animateWave() {
+            const paths = document.querySelectorAll('.dynamic-path, #freq-path');
+            waveFrame++;
+            
+            paths.forEach(path => {
+                // 프레임 스킵을 통해 너무 매끄럽지 않게 (정적인 느낌 부여)
+                if (waveFrame % 3 !== 0) return;
+
+                const width = 400;
+                const centerY = 30;
+                let d = `M 0 ${centerY}`;
+                
+                const step = 8; // 직선 마디의 길이
+                const maxNoise = isTyping ? 18 : 3; // 타이핑 중일 때만 지지직거림 강화
+                
+                for (let x = step; x <= width; x += step) {
+                    const noise = (Math.random() - 0.5) * maxNoise;
+                    // 가끔 튀는 노이즈 추가
+                    const glitch = Math.random() > 0.97 ? (Math.random() - 0.5) * 30 : 0;
+                    d += ` L ${x} ${centerY + noise + glitch}`;
+                }
+                
+                path.setAttribute('d', d);
+            });
+            
+            requestAnimationFrame(animateWave);
+        }
+        animateWave();
+
+        // 조사 판별 로직
+        const Josa = {
+            get: (name, type) => {
+                const charCode = name.charCodeAt(name.length - 1);
+                const hasBatchim = (charCode - 0xAC00) % 28 > 0;
+                if (type === "아야") return hasBatchim ? "아" : "야";
+                if (type === "은는") return hasBatchim ? "이는" : "는";
+                return "";
+            },
+            nameOnly: (fullName) => fullName.length > 1 ? fullName.substring(1) : fullName
+        };
+
+        window.onload = () => {
+            typeEffect('msg-init', "치지직 치지직... 아!아! 들리십니까?\n미래의 당신입니다.\n재가장기요양보험에 대해 알려줄 게 있어요.");
+        };
+
+        async function callGemini(prompt, systemMsg = "당신은 드라마 '시그널'의 미래 화자입니다. 애틋하고 긴박하며 따뜻하게 한국어로 조언하세요.") {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: { parts: [{ text: systemMsg }] }
+                    })
+                });
+                const result = await response.json();
+                return result.candidates?.[0]?.content?.parts?.[0]?.text || "통신 상태가 좋지 않습니다.";
+            } catch (error) {
+                return "지직... 주파수가 불안정합니다.";
+            }
+        }
+
+        function goToStep(s) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            const nextEl = document.getElementById(`step${s}`);
+            if(nextEl) {
+                nextEl.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        }
+
+        async function startMission() {
+            userName = document.getElementById('uName').value.trim();
+            userAge = parseInt(document.getElementById('uAge').value.trim());
+            if(!userName || !userAge) return alert("교신을 위해 성함과 나이가 꼭 필요합니다.");
+            
+            const btn = document.getElementById('startBtn');
+            btn.innerHTML = `✨ 신호 해독 중...`;
+            btn.disabled = true;
+
+            const currentYear = new Date().getFullYear();
+            if (userAge < 65) targetAge = 67; else targetAge = userAge + 3;
+            futureYear = currentYear + (targetAge - userAge);
+            
+            callName = Josa.nameOnly(userName);
+            josa = Josa.get(callName, "아야");
+
+            const aiPrompt = `사용자 ${callName}${josa}(${userAge}세)에게 ${futureYear}년의 ${targetAge}세 된 자신이 보내는 첫 무전입니다. 아주 절박하지만 따뜻하게, 재가장기요양보험 준비를 안 해서 후회한다는 내용을 2줄 이내로 한국어로 작성하세요. "지직- ${callName}${josa}..."로 시작하세요.`;
+            const aiMsg = await callGemini(aiPrompt);
+            scenario[0].customQ = aiMsg;
+            
+            renderNarrative();
+        }
+
+        const scenario = [
+            {
+                q: (name, year, target, j) => `지직- ${name}${j}, 들려? 나야... ${year}년의 너야. 벌써 내가 ${target}살이 됐어. 나 지금 아무 대비도 못 해서 너무 힘들어... 내 말 꼭 들어줄래?`,
+                a: ["말씀하세요, 듣고 있어요", "무슨 일이신가요?"],
+                r: (name, j) => `고마워 ${name}${j}... 나도 그때의 너처럼 젊었을 때는 그냥 남의 일인 줄만 알았지. 근데 이게 우리 노후의 생명줄이더라고.`
+            },
+            {
+                q: (name) => `그때의 ${name}${Josa.get(name, '은는')} 장기요양등급이 뭔지 정확히 알고 있어? 나라에서 등급을 받으면 요양보호사나 시설 서비스를 지원해 주거든.`,
+                a: ["조금 알고 있어요", "자세히 알려주세요"],
+                r: () => "맞아, 나라는 서비스를 지원해 줘. 하지만 본인부담금이랑 생활비는 내 몫이야. 현금이 없으면 그 서비스도 제대로 못 받아."
+            },
+            {
+                q: (name) => `나라는 서비스를 해주지만, 매달 현금을 연금처럼 챙겨주는 건 오직 이 보험뿐이라는 걸 그때의 ${name}${Josa.get(name, '은는')} 몰랐을 거야.`,
+                a: ["그렇군요", "중요한 정보네요"],
+                r: () => "응, 누구나 받지만... 미리 준비해야만 나중에 매달 든든하게 현금 챙기며 여유롭게 살 수 있는 거야."
+            },
+            {
+                q: () => "지직- 등급 인정율이 무려 89%나 된대! 신청하면 10명 중 9명은 혜택을 받는 거야. 정말 놀랍지?",
+                a: ["그렇게나 높나요?", "이제라도 준비할게요"],
+                r: () => "그래, 문턱이 정말 낮아졌어. 등급만 받으면 나라 서비스에 우리 보험금까지 더해서 완벽한 노후를 보낼 수 있는 거야."
+            },
+            {
+                q: (name) => `${name}${Josa.get(name, '아야')}, 등급 받으면 요양보호사가 집으로 와서 식사며 목욕하며 다 도와줘. 이 '재가 서비스' 알고 있었어?`,
+                a: ["알고 있었어요", "자세히 알려줘요"],
+                r: () => "집에서 케어받는 게 최고지. 근데 서비스 비용 말고도 간식비, 약값... 매달 나가는 현금이 없으면 결국 요양원 가야 해."
+            },
+            {
+                q: (name) => `그래서 등급 받기 전에 이 보험을 준비해야 해. 나중에 매달 100~250만원씩 현금이 나오거든! 2026년의 ${userName}아, 이거 정말 크지?`,
+                a: ["현금을 직접 주나요?", "금액이 정말 든든하네요"],
+                r: () => `그때의 내가 이 보험을 했어야 했는데... 현금까지 넉넉했으면 지금처럼 고생 안 했을 거야.`
+            },
+            {
+                q: () => "등급 받는 순간부터 보험료 한 푼도 안 내도 되는 '납입면제' 기능... 들어본 적 있니?",
+                a: ["알고 있었어요", "처음 듣는 얘기에요"],
+                r: () => "아프면 돈 벌기 힘들잖아. 그때 보험료까지 면제해주니 얼마나 고마운 제도니. 넌 꼭 챙겨야 해."
+            },
+            {
+                q: () => "매월 120만원씩 꼬박꼬박 받으려면 너는 얼마를 내야 하는지 궁금하지 않아? 내가 알려줄까?",
+                a: ["네, 알려주세요", "얼마나 저렴한가요?"],
+                r: () => "그래, 지금 바로 확인해 봐. 근데 가입이 좀 까다롭거든? 그때의 너를 위해 솔직하게 대답해 줘야 해."
+            },
+            {
+                q: (name) => `지직- ${name} 잘 들어. 5년 이내에 치매나 뇌혈관 질환, 뇌손상 같은 거 앓은 적 있었어?`,
+                a: ["전혀 없었어요", "병력이 있어요"],
+                r: (name) => `${name}${Josa.get(name, '아야')}, 병력이 있으면 거절될 확률이 높지만 배우자 가입이나 가족요양 급여 같은 대안도 있으니 포기하진 마.`
+            },
+            {
+                q: () => "최근 2년 이내에 어디 아파서 입원하거나 수술한 적은 없었지? 지직-",
+                a: ["전혀 없었어요", "수술/입원 했어요"],
+                r: () => "응, 만약 이력이 있다면 심사를 더 자세히 해봐야 해. 그래도 너무 걱정하진 말고 일단 신호를 끝까지 받아."
+            },
+            {
+                q: () => "마지막이야! 최근 3년 내 보험금 청구 이력이 5번 넘어? 너무 자주 병원 다닌 건 아니지?",
+                a: ["5번 안 돼요", "5번 넘어요"],
+                r: () => "청구 5회 이상은 큰 문제는 아냐. 다만 보험금 탄 금액이 너무 크면 확인이 필요해."
+            },
+            {
+                q: (name, year) => `지직- ${name}${Josa.get(name, '아야')}... ${year}년은 먼 미래 같지? 하지만 눈 깜짝할 새 온다. 지금 이 혜택들, 보험사들이 매달 줄이고 있어. 내 시간대에는 이런 조건 아예 없거든. 미루지 마!`,
+                isFinal: true
+            }
+        ];
+
+        async function renderNarrative() {
+            showStatic();
+            await new Promise(r => setTimeout(r, 600));
+            hideStatic();
+
+            const data = scenario[currentIdx];
+            const container = document.getElementById('narrative-container');
+            updateProgress();
+
+            const displayQ = (currentIdx === 0 && data.customQ) ? data.customQ : data.q(callName, futureYear, targetAge, josa);
+
+            const html = `
+                <div class="panel active">
+                    <div class="max-w-wrap flex flex-col py-6">
+                        <div class="radio-display mb-6">
+                            <div class="ai-badge"><i class="fas fa-signal mr-1"></i> SIGNAL DECODED</div>
+                            <div id="type-q" class="text-header text-center"></div>
+                            <div class="wave-container">
+                                <svg class="wave-svg" viewBox="0 0 400 60">
+                                    <path id="freq-path-${currentIdx}" class="dynamic-path" d="M0 30 L 400 30" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div id="choice-btns" class="space-y-3">
+                            ${data.isFinal ? renderFinalForm() : renderAnsBtns(data.a)}
+                        </div>
+                        <div id="reaction-box" class="hidden mt-6">
+                            <div class="bg-slate-900 border-l-8 border-cyan-500 p-6 rounded-r-2xl shadow-xl">
+                                <p class="text-cyan-400 font-black text-lg mb-2">${futureYear}년의 당신(${targetAge}세):</p>
+                                <p id="type-r" class="text-body leading-snug"></p>
+                            </div>
+                            <button onclick="goNext()" class="btn-radio bg-cyan-600 border-none py-6 mt-8 w-full">
+                                다음 무전 듣기 <i class="fas fa-chevron-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            typeEffect('type-q', displayQ);
+        }
+
+        function renderAnsBtns(arr) {
+            return arr.map((t, i) => `<button onclick="handleAns(${i}, '${t}')" class="btn-radio">${t}</button>`).join('');
+        }
+
+        function renderFinalForm() {
+            fetchAIAdvice();
+            return `
+                <div class="space-y-4">
+                    <input type="text" id="region" placeholder="거주 지역 (예: 서울 강남)" class="w-full bg-slate-900 border-2 border-slate-700 p-5 rounded-2xl text-2xl font-bold outline-none text-center">
+                    <input type="tel" id="phone" placeholder="휴대폰 번호 (-없이)" class="w-full bg-slate-900 border-2 border-slate-700 p-5 rounded-2xl text-2xl font-bold outline-none text-center">
+                    <div id="ai-report" class="p-5 bg-orange-950/40 border border-orange-500/50 rounded-2xl">
+                        <p class="text-orange-400 font-black text-sm mb-2">✨ AI 미래 생존 리포트 분석 중...</p>
+                        <p id="ai-advice-text" class="text-xs text-white leading-relaxed">신호를 분석하고 있습니다...</p>
+                    </div>
+                    <button onclick="submitMission()" class="w-full bg-orange-600 py-6 rounded-2xl text-2xl font-black shadow-xl animate-bounce">
+                        미래 바꾸기 (리포트 신청)
+                    </button>
+                </div>
+            `;
+        }
+
+        async function fetchAIAdvice() {
+            const historyStr = userHistory.slice(-3).map(h => h.a).join(', ');
+            const prompt = `사용자 ${callName}의 병력 답변: ${historyStr}. 이 결과를 분석해서 미래에서 온 자신처럼 따뜻하게 보험 가입 팁을 한 문장으로 조언해줘.`;
+            const advice = await callGemini(prompt, "당신은 AI 보험 전문가입니다. 2026년의 사용자에게 희망을 주는 조언을 하세요.");
+            const target = document.getElementById('ai-advice-text');
+            if(target) target.innerText = advice;
+        }
+
+        function handleAns(idx, text) {
+            userHistory.push({ q: scenario[currentIdx].q.toString(), a: text });
+            document.getElementById('choice-btns').classList.add('hidden');
+            document.getElementById('reaction-box').classList.remove('hidden');
+            typeEffect('type-r', scenario[currentIdx].r(callName, josa));
+        }
+
+        function goNext() { currentIdx++; renderNarrative(); }
+
+        function typeEffect(id, text) {
+            const el = document.getElementById(id);
+            if(!el) return;
+            isTyping = true;
+            let i = 0; el.innerHTML = "";
+            function typing() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                    i++;
+                    setTimeout(typing, 25 + Math.random() * 20);
+                } else {
+                    el.innerHTML += '<span class="cursor"></span>';
+                    isTyping = false;
+                }
+            }
+            typing();
+        }
+
+        function showStatic() { document.getElementById('static-screen').style.display = 'flex'; }
+        function hideStatic() { document.getElementById('static-screen').style.display = 'none'; }
+        function updateProgress() { document.getElementById('pBar').style.width = ((currentIdx + 1) / scenario.length * 100) + "%"; }
+
+        function submitMission() {
+            const p = document.getElementById('phone').value.trim();
+            if(!p) return alert("리포트를 받으실 연락처를 남겨주세요!");
+            document.body.innerHTML = `
+                <div class="h-screen flex flex-col items-center justify-center p-10 text-center bg-slate-950">
+                    <div class="antenna-active w-28 h-28 bg-cyan-500 rounded-full flex items-center justify-center mb-8 shadow-2xl">
+                        <i class="fas fa-check text-5xl text-white"></i>
+                    </div>
+                    <h2 class="text-header mb-6">전송 성공!</h2>
+                    <p class="text-body text-slate-400">2026년의 ${callName}${josa}, 당신이 바꾼 미래 리포트가 안전하게 전송되었습니다. 곧 전문가가 연락하여 AI 분석 결과를 바탕으로 상담을 도와드릴게요.</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
