@@ -2,484 +2,481 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>시그널: AI가 해독한 미래의 무전</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SUPER SALES KART : PROFESSIONAL FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <style>
         :root {
-            --signal-cyan: #00f2ff;
-            --signal-orange: #ff9d00;
-            --bg-dark: #020617;
+            --kart-blue: #009dfd;
+            --kart-red: #ea0012;
+            --kart-yellow: #fff300;
+            --kart-green: #37d300;
+            --kart-dark: #121212;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.4);
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: #ffffff;
-            font-family: 'Nanum Gothic', sans-serif;
-            margin: 0; padding: 0;
-            word-break: keep-all;
-            min-height: 100dvh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #2c3e50;
+            color: #333;
             overflow-x: hidden;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; overscroll-behavior: none;
         }
 
-        /* 5060 가독성 폰트 */
-        .text-header { font-size: 1.65rem; line-height: 1.4; font-weight: 800; }
-        .text-body { font-size: 1.25rem; line-height: 1.5; font-weight: 700; }
-
-        .noise-layer {
-            position: fixed; inset: 0;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Static_Noise_Small.gif');
-            opacity: 0.03; pointer-events: none; z-index: 10;
+        .kart-frame {
+            width: 100%; max-width: 480px; height: 100dvh; max-height: 900px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%);
+            position: relative; display: flex; flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5); overflow: hidden;
+            border: 4px solid #fff; border-radius: 24px;
         }
 
-        @keyframes antenna-vibrate {
-            0% { transform: rotate(0deg) scale(1); }
-            20% { transform: rotate(-3deg) scale(1.05); filter: drop-shadow(0 0 8px var(--signal-cyan)); }
-            40% { transform: rotate(5deg) scale(1.05); }
-            100% { transform: rotate(0deg); }
+        .road-bg {
+            position: absolute; bottom: -20%; left: -50%; width: 200%; height: 60%;
+            background-color: #444;
+            background-image: 
+                linear-gradient(90deg, transparent 49%, #fff 50%, transparent 51%),
+                repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255,255,255,0.1) 21px, rgba(255,255,255,0.1) 40px);
+            transform: perspective(500px) rotateX(60deg);
+            animation: roadMove 1s linear infinite; pointer-events: none; z-index: 0; opacity: 0.6;
         }
-        .antenna-active { animation: antenna-vibrate 0.6s infinite; }
+        @keyframes roadMove { from { background-position: 0 0; } to { background-position: 0 80px; } }
 
-        /* 지지직거리는 직선 주파수 애니메이션 */
-        .wave-container {
-            width: 100%; height: 60px;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; margin: 1.2rem 0;
-            background: rgba(0,0,0,0.6); border-radius: 0.8rem;
-            position: relative; border: 1px solid rgba(0, 242, 255, 0.2);
+        .hud {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; z-index: 50; background: rgba(0, 157, 253, 0.4);
+            backdrop-filter: blur(10px); border-bottom: 2px solid rgba(255,255,255,0.5); color: white;
+        }
+        .lap-badge { background: var(--kart-red); padding: 2px 12px; border-radius: 20px; font-weight: 700; box-shadow: 0 4px 0 #990000; }
+
+        .scene {
+            flex: 1; position: relative; z-index: 10; display: flex; flex-direction: column;
+            align-items: center; padding: 20px; padding-bottom: 120px; overflow-y: auto; width: 100%;
+        }
+        .scene::-webkit-scrollbar { display: none; }
+
+        .intro-logo {
+            font-family: 'Fredoka', sans-serif; font-size: 44px; line-height: 1.1; font-weight: 700;
+            color: #fff; text-align: center; text-shadow: 0 4px 0 var(--kart-blue), 0 8px 0 var(--kart-dark);
+            transform: skewY(-5deg) rotate(-2deg); margin-bottom: 30px;
+        }
+        .logo-sub {
+            background: var(--kart-yellow); color: #000; padding: 8px 24px; border-radius: 50px;
+            font-weight: 900; display: inline-block; box-shadow: 0 5px 0 #e6a700; transform: skewY(-5deg);
+            margin-bottom: 50px; font-size: 15px;
         }
         
-        .wave-svg { width: 100%; height: 100%; stroke: var(--signal-cyan); stroke-width: 1.5; fill: none; filter: drop-shadow(0 0 5px var(--signal-cyan)); }
+        .kart-btn {
+            background: linear-gradient(to bottom, #ff5e3a 0%, #ff2a00 100%);
+            border: 2px solid rgba(255,255,255,0.5); border-radius: 50px;
+            color: white; font-size: 24px; font-weight: 900; padding: 16px 60px;
+            box-shadow: 0 6px 0 #cc2200; cursor: pointer; transition: 0.1s;
+        }
+        .kart-btn:active { transform: translateY(6px); box-shadow: none; }
 
-        .radio-display {
-            background: #0f172a; border: 4px solid #334155; border-radius: 2.5rem;
-            padding: 2.2rem 1.5rem; box-shadow: inset 0 0 40px #000;
-            min-height: 220px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; margin-bottom: 1.5rem;
+        .glass-panel {
+            background: var(--glass-bg); border-radius: 24px; padding: 24px; width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 20px;
+            backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
+        }
+        .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .q-tag { background: var(--kart-blue); color: white; padding: 3px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; }
+        .q-text { font-size: 20px; font-weight: 800; color: #2d3748; text-align: center; margin-bottom: 24px; line-height: 1.4; }
+
+        .racer-card {
+            background: white; border-radius: 16px; padding: 12px;
+            display: flex; align-items: center; cursor: pointer;
+            border: 2px solid #eee; box-shadow: 0 4px 0 #ddd;
+            transition: all 0.2s; margin-bottom: 10px;
+        }
+        .racer-card:hover { background: #fff9c4; border-color: var(--kart-yellow); transform: translateY(-2px); }
+        .racer-img-box {
+            width: 48px; height: 48px; border-radius: 50%; background: #f0f0f0; margin-right: 15px;
+            display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #000;
         }
 
-        .btn-radio {
-            background: rgba(30, 41, 59, 0.95); border: 3px solid var(--signal-cyan);
-            border-radius: 1.5rem; padding: 1.4rem 1rem; width: 100%;
-            font-size: 1.4rem; font-weight: 800; margin-bottom: 1rem;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.5); transition: all 0.2s;
-            color: #fff; text-align: center;
+        .option-btn {
+            display: block; width: 100%; text-align: left;
+            background: white; border: 2px solid #eee;
+            padding: 14px; margin-bottom: 10px;
+            font-size: 15px; font-weight: 700; border-radius: 12px;
+            box-shadow: 0 4px 0 #ddd; transition: 0.1s;
+            position: relative;
         }
-        .btn-radio:active { background: var(--signal-cyan); color: #000; transform: scale(0.96); }
+        .option-btn.selected { background: #fff9c4; border-color: var(--kart-yellow); box-shadow: 0 4px 0 #fbc02d; }
+        .option-btn.selected::after { content: '🏁'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
 
-        .cursor { display: inline-block; width: 10px; height: 1.3em; background: var(--signal-cyan); margin-left: 4px; animation: blink 0.8s infinite; vertical-align: middle; }
-        @keyframes blink { 50% { opacity: 0; } }
+        .nav-btn {
+            flex: 1; padding: 14px; text-align: center; border-radius: 16px;
+            font-weight: 800; font-size: 16px; transition: transform 0.1s;
+        }
+        .btn-back { background: #f1f5f9; color: #64748b; box-shadow: 0 4px 0 #cbd5e1; }
+        .btn-next { background: var(--kart-green); color: white; box-shadow: 0 4px 0 #16a34a; }
 
-        .progress-top { position: fixed; top: 0; left: 0; height: 10px; background: var(--signal-cyan); z-index: 1000; transition: width 0.3s; box-shadow: 0 0 15px var(--signal-cyan); }
-
-        .panel { display: none; padding: 1.5rem; min-height: 100dvh; flex-direction: column; justify-content: flex-start; overflow-y: auto; }
-        .panel.active { display: flex; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .max-w-wrap { max-width: 500px; margin: 0 auto; width: 100%; }
-
-        #static-screen { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; align-items: center; justify-content: center; pointer-events: none; }
-
-        .ai-badge {
-            display: inline-block; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--signal-cyan);
-            padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 900;
-            color: var(--signal-cyan); margin-bottom: 8px; letter-spacing: 1px;
+        .kart-input {
+            width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 16px;
+            font-size: 18px; font-weight: bold; text-align: center; outline: none; background: #fff;
         }
 
-        /* 폼 요소 높이 및 디자인 통일 */
-        .standard-input {
-            background-color: #0f172a; color: white; border: 2px solid #334155;
-            height: 4rem; padding: 0 1rem; border-radius: 1rem; font-size: 1.3rem; font-weight: bold;
-            width: 100%; outline: none; transition: border-color 0.2s;
-            display: flex; align-items: center; justify-content: center;
-            box-sizing: border-box;
-        }
-        .standard-input:focus { border-color: var(--signal-cyan); }
-        
-        select.standard-input { 
-            appearance: none; 
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); 
-            background-repeat: no-repeat; 
-            background-position: right 1rem center; 
-            background-size: 1.5rem; 
+        .impact-badge {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000; font-weight: 900; padding: 2px 10px; border-radius: 6px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1); font-size: 9px; display: inline-block;
         }
 
-        /* 이름 입력 전용 컨테이너 */
-        .name-input-container {
-            position: relative; background: rgba(30, 41, 59, 0.5);
-            border: 2px dashed rgba(34, 211, 238, 0.3); border-radius: 1.5rem;
-            padding: 1.2rem; box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        .global-footer {
+            position: absolute; bottom: 15px; left: 0; right: 0;
+            text-align: center; z-index: 100; pointer-events: none;
+        }
+        .copyright-text {
+            font-size: 9px; color: #64748b; font-weight: 700; opacity: 0.7;
+            letter-spacing: -0.2px; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
         }
 
-        /* 생년월일/지역 3단 가로 정렬 */
-        .form-row { display: flex; gap: 0.5rem; }
-        .form-row > * { flex: 1; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none !important; }
 
-        /* 성별 선택 버튼 디자인 수정 */
-        .gender-group { display: flex; gap: 0.5rem; }
-        .btn-gender {
-            flex: 1; background: #0f172a; border: 2px solid #334155;
-            height: 4rem; border-radius: 1rem; font-size: 1.3rem; font-weight: 800;
-            color: #64748b; transition: all 0.2s;
-        }
-        .btn-gender.active { border-color: var(--signal-cyan); color: var(--signal-cyan); background: rgba(0, 242, 255, 0.1); }
-
-        /* 전화번호 입력 디자인 */
-        .phone-group { display: flex; align-items: center; gap: 0.5rem; }
-        .fixed-010 { width: 80px; height: 4rem; background: #1e293b; color: #94a3b8; border: 2px dashed #334155; border-radius: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; }
-        .phone-input { flex: 1; text-align: center; font-size: 1.5rem; letter-spacing: 2px; }
-
-        .consent-box { background: rgba(255,255,255,0.05); border-radius: 1rem; padding: 1rem; margin-top: 1rem; }
-        .consent-item { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .consent-item input { margin-top: 0.3rem; width: 1.2rem; height: 1.2rem; }
-        .view-detail { color: var(--signal-cyan); text-decoration: underline; font-size: 0.8rem; cursor: pointer; margin-left: auto; }
-        
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; flex-direction: column; padding: 2rem; overflow-y: auto; }
-        .modal-content { background: #1e293b; padding: 1.5rem; border-radius: 1.5rem; font-size: 0.85rem; line-height: 1.6; color: #cbd5e1; }
-
-        .premium-card {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 2px solid var(--signal-cyan); border-radius: 2rem;
-            padding: 2rem; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); margin-bottom: 2rem;
+        .entry-no-badge {
+            background: #000; color: #fff; font-family: 'Fredoka', sans-serif;
+            font-weight: 900; padding: 4px 10px; border-radius: 8px; border: 2px solid #fff;
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 20;
         }
     </style>
 </head>
 <body>
 
-    <div class="noise-layer"></div>
-    <div id="pBar" class="progress-top" style="width: 0%"></div>
+<div class="kart-frame">
+    <div class="road-bg"></div>
 
-    <div id="static-screen">
-        <p class="text-white text-2xl font-black italic opacity-60">치지직... 신호 해독 중...</p>
-    </div>
-
-    <!-- Step 1: 최초 수신 -->
-    <div id="step1" class="panel active">
-        <div class="max-w-wrap flex flex-col justify-center min-h-[90dvh]">
-            <div class="text-center mb-6">
-                <div class="w-32 h-32 bg-cyan-900/20 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-cyan-500 shadow-2xl">
-                    <i class="fas fa-tower-broadcast text-6xl text-cyan-400 antenna-active"></i>
-                </div>
-                <div class="radio-display">
-                    <p id="msg-init" class="text-header font-black text-center"></p>
-                    <div class="wave-container">
-                        <svg class="wave-svg" viewBox="0 0 400 60"><path id="freq-path" d="M0 30 L 400 30" /></svg>
-                    </div>
-                </div>
-            </div>
-            <button onclick="goToStep(2)" class="btn-radio bg-cyan-600 border-none py-6">무전 응답하기 <i class="fas fa-microphone ml-2"></i></button>
+    <div class="hud">
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-gray-100">LAP</span>
+            <span class="lap-badge" id="stepIndicator">START</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <i class="ph-fill ph-coin text-yellow-300"></i>
+            <span class="font-black text-white" id="scoreDisplay">000</span>
         </div>
     </div>
 
-    <!-- Step 2: 정보 입력 -->
-    <div id="step2" class="panel">
-        <div class="max-w-wrap flex flex-col py-6">
-            <div class="mb-8 text-center">
-                <h2 class="text-header mb-4">"누구신가요?"</h2>
-                <p class="text-body text-slate-400 leading-snug">미래로부터 긴급 무전이 수신되었습니다.<br>교신을 위해 정보를 입력해 주세요.</p>
+    <!-- 1. Intro Screen -->
+    <div id="screen-intro" class="scene flex justify-center fade-in">
+        <div class="text-center">
+            <div class="relative mb-6">
+                <i class="ph-duotone ph-steering-wheel text-8xl text-white drop-shadow-lg"></i>
             </div>
-            <div class="space-y-6">
-                <div class="name-input-container space-y-3">
-                    <label class="text-cyan-400 text-[10px] font-black block text-center italic tracking-widest uppercase">Target Identity</label>
-                    <input type="text" id="uName" placeholder="성함을 입력하세요" class="standard-input border-none bg-slate-900/80 text-center">
-                </div>
+            <h1 class="intro-logo">SUPER<br>SALES KART</h1>
+            <div class="logo-sub">보험영업인 내 가치 측정하기</div>
+        </div>
+        <button class="kart-btn" onclick="goToRacerSelect()">RACE START!</button>
+    </div>
+
+    <!-- 2. Racer Select -->
+    <div id="screen-racer" class="scene hidden fade-in">
+        <div class="glass-panel">
+            <div class="q-header"><span class="q-tag">SELECT PLAYER</span><span class="text-xs text-gray-400 font-bold" id="racer-progress">1 / 22</span></div>
+            <p class="q-text">나의 영업 스타일과<br>가장 닮은 캐릭터는?</p>
+            <div id="racer-list" class="flex flex-col w-full"></div>
+        </div>
+    </div>
+
+    <!-- 3. Dynamic Question Screen -->
+    <div id="screen-q" class="scene hidden fade-in">
+        <div class="glass-panel">
+            <div class="q-header"><span class="q-tag" id="q-category">DRIVING</span><span class="text-xs text-gray-400 font-bold" id="q-progress">2 / 22</span></div>
+            <p class="q-text" id="q-desc">...</p>
+            <div id="area-choice" class="flex flex-col"></div>
+            <div id="area-input" class="hidden"></div>
+        </div>
+        <div class="flex gap-3 w-full max-w-[400px] mt-2 px-4">
+            <button class="nav-btn btn-back w-1/3" onclick="prevStep()">BACK</button>
+            <button class="nav-btn btn-next w-2/3 hidden" id="btn-next-manual" onclick="handleNext()">NEXT ▶</button>
+        </div>
+    </div>
+
+    <!-- 4. Result Screen -->
+    <div id="screen-result" class="scene hidden fade-in" style="padding-top:40px;">
+        <div class="glass-panel text-center relative">
+            <div class="entry-no-badge" id="res-entry-box" style="display:none;">PLAYER NO.<span id="res-entry-no">---</span></div>
+            <div class="w-20 h-20 bg-white rounded-full mx-auto -mt-16 border-4 border-yellow-400 flex items-center justify-center text-4xl shadow-lg mb-4"><span id="res-racer-icon">🏆</span></div>
+            <h2 class="text-2xl font-black text-gray-800 mb-1">FINISH!</h2>
+            <p class="text-xs text-gray-500 font-bold mb-6 uppercase tracking-widest text-center">Course Clear • New Record</p>
+
+            <!-- 몸값 가치 섹션 -->
+            <div class="bg-gradient-to-br from-blue-50 to-sky-50 p-4 rounded-2xl border-2 border-white shadow-inner text-center mb-6">
+                <p class="text-[10px] font-bold text-blue-500 tracking-widest mb-1 text-center uppercase font-bold">Estimated Bounty</p>
+                <div class="text-3xl font-black text-gray-800 text-center"><span id="finalPrice">0</span> <span class="text-lg text-gray-500 font-bold">만원</span></div>
+                <p class="text-[10px] font-bold text-gray-400 mt-1 text-center">시장 기준 대비 <span class="text-red-500" id="finalPct">0</span>% 인정</p>
+            </div>
+
+            <div style="height: 180px; width: 100%; margin-bottom: 20px;"><canvas id="radarChart"></canvas></div>
+
+            <!-- 예상 수수료 비전 섹션 -->
+            <div class="bg-blue-900/5 border-2 border-blue-100 p-4 rounded-3xl mb-6 text-center">
+                <h3 class="text-[11px] font-black text-blue-800 mb-4 flex items-center justify-center gap-1 tracking-wider uppercase">
+                    <i class="ph-fill ph-rocket-launch text-blue-500"></i> Potential Earnings
+                </h3>
                 
-                <div class="space-y-3">
-                    <label class="text-slate-500 text-sm font-bold ml-1 text-center block">생년월일</label>
-                    <div class="form-row">
-                        <select id="uYear" class="standard-input"><option value="">년도</option></select>
-                        <select id="uMonth" class="standard-input"><option value="">월</option></select>
-                        <select id="uDay" class="standard-input"><option value="">일</option></select>
+                <div class="grid grid-cols-2 gap-3 px-1">
+                    <div class="bg-white p-3 rounded-2xl border border-blue-200 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[110px]">
+                        <div class="impact-badge" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); width: 100%;">익월 예상 수수료율 750%</div>
+                        <p class="text-[10px] text-gray-500 font-bold mt-2 mb-1 leading-tight text-center">익월 예상<br>수수료</p>
+                        <p class="text-xl font-black text-blue-600 text-center"><span id="resNextMonthPay">0</span><span class="text-xs ml-0.5 font-bold">만</span></p>
+                    </div>
+                    
+                    <div class="bg-white p-3 rounded-2xl border border-red-200 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[110px]">
+                        <div class="impact-badge" style="background: linear-gradient(135deg, #FF6B6B 0%, #EE0000 100%); color: #fff; width: 100%;">13차월 예상 수수료율 1300%</div>
+                        <p class="text-[10px] text-gray-500 font-bold mt-2 mb-1 leading-tight text-center">13차월 예상<br>수수료</p>
+                        <p class="text-xl font-black text-red-600 text-center"><span id="resTotalYearPay">0</span><span class="text-xs ml-0.5 font-bold">만</span></p>
                     </div>
                 </div>
 
-                <div class="bg-orange-500/10 p-6 rounded-3xl border border-orange-500/30">
-                    <p class="text-orange-400 text-lg font-bold text-center">
-                        <i class="fas fa-microchip mr-1"></i> Gemini AI가 당신의 데이터를 분석하여<br>미래 무전 주파수를 연결합니다.
+                <div class="mt-4 px-1 text-center">
+                    <p class="text-[9px] text-blue-600 font-bold mb-1 leading-normal">
+                        ※ 위 수치는 기입하신 평균 월납보험료 <span id="resRefPremium" class="underline decoration-2 font-black text-blue-700">0</span>만원을<br>기준으로 산출된 수치입니다.
+                    </p>
+                    <p class="text-[8px] text-gray-400 leading-tight">
+                        * 건강보험 판매 기준, 생명보험사 수수료 평균치 산출<br>
+                        * 예상 수수료율은 매월 시상의 평균치가 포함된 예상치이며,<br>실제 수수료는 계약 조건 및 상품군에 따라 차이가 발생할 수 있습니다.
                     </p>
                 </div>
-                <button id="startBtn" onclick="startMission()" class="w-full bg-cyan-600 py-6 rounded-2xl text-2xl font-black shadow-2xl mt-4">✨ AI 미래 무전 연결</button>
             </div>
-        </div>
-    </div>
-
-    <div id="narrative-container" class="contents"></div>
-
-    <!-- Privacy Modal -->
-    <div id="privacyModal" class="modal">
-        <div class="max-w-wrap">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">상세 고지 내용</h3>
-                <button onclick="closeModal()" class="text-2xl text-white">&times;</button>
-            </div>
-            <div id="modalContent" class="modal-content whitespace-pre-wrap"></div>
-            <button onclick="closeModal()" class="w-full bg-slate-700 py-4 mt-6 rounded-xl font-bold">닫기</button>
-        </div>
-    </div>
-
-    <script>
-        const apiKey = "";
-        let userName = ""; 
-        let callName = ""; 
-        let josa = "";
-        let userAge = 0;
-        let futureYear = 2026;
-        let targetAge = 67;
-        let currentIdx = 0;
-        let userHistory = [];
-        let isTyping = false;
-        let userGender = "";
-
-        const regionData = {
-            "서울": ["강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"],
-            "경기": ["가평군", "과천시", "광명시", "광주시", "구리시", "군포시", "김포시", "남양주시", "동두천시", "부천시", "성남시", "수원시", "시흥시", "안산시", "안성시", "안양시", "양주시", "양평군", "여주시", "연천군", "오산시", "용인시", "의왕시", "의정부시", "이천시", "파주시", "평택시", "포천시", "하남시", "화성시"],
-            "인천": ["강화군", "계양구", "남동구", "동구", "부평구", "서구", "연수구", "옹진군", "중구"],
-            "부산": ["강서구", "금정구", "기장군", "남구", "동구", "동래구", "부산진구", "북구", "사상구", "사하구", "서구", "수영구", "연제구", "영도구", "중구", "해운대구"],
-            "대구": ["남구", "달서구", "달성군", "동구", "북구", "서구", "수성구", "중구", "군위군"],
-            "광주": ["광산구", "남구", "동구", "북구", "서구"],
-            "대전": ["대덕구", "동구", "서구", "유성구", "중구"],
-            "울산": ["남구", "동구", "북구", "울주군", "중구"],
-            "세종": ["세종특별자치시"],
-            "강원": ["강릉시", "고성군", "동해시", "삼척시", "속초시", "양구군", "양양군", "영월군", "원주시", "인제군", "정선군", "철원군", "춘천시", "태백시", "평창군", "홍천군", "화천군", "횡성군"],
-            "충북": ["괴산군", "단양군", "보은군", "영동군", "옥천군", "음성군", "제천시", "증평군", "진천군", "청주시", "충주시"],
-            "충남": ["계룡시", "공주시", "금산군", "논산시", "당진시", "보령시", "부여군", "서산시", "서천군", "아산시", "예산군", "천안시", "청양군", "태안군", "홍성군"],
-            "전북": ["고창군", "군산시", "김제시", "남원시", "무주군", "부안군", "순창군", "완주군", "익산시", "임실군", "장수군", "전주시", "진안군"],
-            "전남": ["강진군", "고흥군", "곡성군", "광양시", "구례군", "나주시", "담양군", "목포시", "무안군", "보성군", "순천시", "신안군", "여수시", "영광군", "영암군", "완도군", "장성군", "장흥군", "진도군", "함평군", "해남군", "화순군"],
-            "경북": ["경산시", "경주시", "고령군", "구미시", "김천시", "문경시", "봉화군", "상주시", "성주군", "안동시", "영덕군", "영양군", "영주시", "영천시", "예천군", "울릉군", "울진군", "의성군", "청도군", "청송군", "칠곡군", "포항시"],
-            "경남": ["거제시", "거창군", "고성군", "김해시", "남해군", "밀양시", "사천시", "산청군", "양산시", "의령군", "진주시", "창녕군", "창원시", "통영시", "하동군", "함안군", "함양군", "합천군"],
-            "제주": ["제주시", "서귀포시"]
-        };
-
-        let waveFrame = 0;
-        function animateWave() {
-            const paths = document.querySelectorAll('.dynamic-path, #freq-path');
-            waveFrame++;
-            paths.forEach(path => {
-                if (waveFrame % 3 !== 0) return;
-                const width = 400; const centerY = 30; let d = `M 0 ${centerY}`;
-                const step = 8; const maxNoise = isTyping ? 18 : 3;
-                for (let x = step; x <= width; x += step) {
-                    const noise = (Math.random() - 0.5) * maxNoise;
-                    const glitch = Math.random() > 0.97 ? (Math.random() - 0.5) * 30 : 0;
-                    d += ` L ${x} ${centerY + noise + glitch}`;
-                }
-                path.setAttribute('d', d);
-            });
-            requestAnimationFrame(animateWave);
-        }
-        animateWave();
-
-        const Josa = {
-            get: (name, type) => {
-                const charCode = name.charCodeAt(name.length - 1);
-                const hasBatchim = (charCode - 0xAC00) % 28 > 0;
-                if (type === "아야") return hasBatchim ? "아" : "야";
-                if (type === "은는") return hasBatchim ? "이는" : "는";
-                return "";
-            },
-            nameOnly: (fullName) => fullName.length > 1 ? fullName.substring(1) : fullName
-        };
-
-        window.onload = () => {
-            typeEffect('msg-init', "치지직 치지직... 아!아! 들리십니까?\n미래의 당신입니다.\n재가장기요양보험에 대해 알려줄 게 있어요.");
-            const yS = document.getElementById('uYear'); const mS = document.getElementById('uMonth'); const dS = document.getElementById('uDay');
-            const cY = new Date().getFullYear();
-            for(let y=cY-15; y>=1930; y--) { const o = document.createElement('option'); o.value=y; o.innerText=y+"년"; yS.appendChild(o); }
-            for(let m=1; m<=12; m++) { const o = document.createElement('option'); o.value=m; o.innerText=m+"월"; mS.appendChild(o); }
-            for(let d=1; d<=31; d++) { const o = document.createElement('option'); o.value=d; o.innerText=d+"일"; dS.appendChild(o); }
-        };
-
-        async function callGemini(prompt, systemMsg = "당신은 드라마 '시그널'의 미래 화자입니다. 애틋하고 긴박하며 따뜻하게 한국어로 조언하세요.") {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], systemInstruction: { parts: [{ text: systemMsg }] } }),
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                const result = await response.json();
-                return result.candidates?.[0]?.content?.parts?.[0]?.text || null;
-            } catch (error) { return null; }
-        }
-
-        function goToStep(s) {
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            const nextEl = document.getElementById(`step${s}`);
-            if(nextEl) { nextEl.classList.add('active'); window.scrollTo({ top: 0, behavior: 'instant' }); }
-        }
-
-        async function startMission() {
-            userName = document.getElementById('uName').value.trim();
-            const uY = document.getElementById('uYear').value;
-            const uM = document.getElementById('uMonth').value;
-            const uD = document.getElementById('uDay').value;
-            if(!userName || !uY || !uM || !uD) return alert("교신을 위해 성함과 생년월일을 모두 선택해 주세요.");
-            const today = new Date();
-            userAge = today.getFullYear() - parseInt(uY);
-            const btn = document.getElementById('startBtn'); btn.innerHTML = `✨ 신호 해독 중...`; btn.disabled = true;
-            const currentYear = new Date().getFullYear();
-            if (userAge < 65) targetAge = 67; else targetAge = userAge + 3;
-            futureYear = currentYear + (targetAge - userAge);
-            callName = Josa.nameOnly(userName); josa = Josa.get(callName, "아야");
-            const aiPrompt = `사용자 ${callName}${josa}(${userAge}세)에게 ${futureYear}년의 ${targetAge}세 된 자신이 보내는 첫 무전입니다. 아주 절박하지만 따뜻하게, 재가장기요양보험 준비를 안 해서 후회한다는 내용을 2줄 이내로 한국어로 작성하세요. "지직- ${callName}${josa}..."로 시작하세요.`;
-            renderNarrative();
-            callGemini(aiPrompt).then(msg => { if(msg) scenario[0].customQ = msg; });
-        }
-
-        const scenario = [
-            { q: (name, year, target, j) => `지직- ${name}${j}, 들려? 나야... ${year}년의 너야. 벌써 내가 ${target}살이 됐어. 나 지금 아무 대비도 못 해서 너무 힘들어... 내 말 꼭 들어줄래?`, a: ["말씀하세요, 듣고 있어요", "제가 어떻게 하면 될까요?"], r: (name, j) => `고마워 ${name}${j}... 나도 그때의 너처럼 젊었을 때는 그냥 남의 일인 줄만 알았지. 근데 장기요양등급... 이게 우리 노후의 생명줄이더라고.` },
-            { q: (name) => { const n = Josa.nameOnly(name); const j = Josa.get(n, "은는"); return `그때의 ${n}${j} 장기요양등급이 뭔지 정확히 알고 있어? 나라에서 등급을 받으면 요양보호사나 시설 서비스를 지원해 주거든.`; }, a: ["조금 알고 있어요", "자세히 알려주세요"], r: () => "맞아, 나라는 서비스를 지원해 줘. 하지만 본인부담금이랑 생활비는 내 몫이야. 현금이 없으면 그 서비스도 제대로 못 받아." },
-            { q: (name) => { const n = Josa.nameOnly(name); const j = Josa.get(n, "은는"); return `나라는 서비스를 해주지만, 매달 현금을 연금처럼 챙겨주는 건 오직 이 보험뿐이라는 걸 그때의 ${n}${j} 몰랐을 거야.`; }, a: ["그렇군요", "중요한 정보네요"], r: () => "응, 누구나 받지만... 미리 준비해야만 나중에 매달 든든하게 현금 챙기며 여유롭게 살 수 있는 거야." },
-            { q: () => "지직- 등급 인정율이 무려 89%나 된대! 신청하면 10명 중 9명은 혜택을 받는 거야. 정말 놀랍지?", a: ["그렇게나 높나요?", "이제라도 준비할게요"], r: () => "그래, 문턱이 정말 낮아졌어. 등급만 받으면 나라 서비스에 우리 보험금까지 더해서 완벽한 노후를 보낼 수 있는 거야." },
-            { q: (name) => { const n = Josa.nameOnly(name); const j = Josa.get(n, "아야"); return `${n}${j}, 등급 받으면 요양보호사가 집으로 와서 식사며 목욕하며 다 도와줘. 이 '재가 서비스' 알고 있었어?`; }, a: ["알고 있었어요", "자세히 알려줘요"], r: () => "집에서 케어받는 게 최고지. 근데 서비스 비용 말고도 간식비, 약값... 매달 나가는 현금이 없으면 결국 요양원 가야 해." },
-            { q: (name) => { const n = Josa.nameOnly(name); const j = Josa.get(n, "아야"); return `그래서 등급 받기 전에 이 보험을 준비해야 해. 나중에 매달 100~250만원씩 현금이 나오거든! 2026년의 ${userName}아, 이거 정말 크지?`; }, a: ["현금을 직접 주나요?", "금액이 정말 든든하네요"], r: (name) => `그때의 내가 이 보험을 했어야 했는데... 현금까지 넉넉했으면 지금처럼 고생 안 했을 거야.` },
-            { q: () => "등급 받는 순간부터 보험료 한 푼도 안 내도 되는 '납입면제' 기능... 들어본 적 있니?", a: ["알고 있었어요", "처음 듣는 얘기에요"], r: () => "아프면 돈 벌기 힘들잖아. 그때 보험료까지 면제해주니 얼마나 고마운 제도니. 넌 꼭 챙겨야 해." },
-            { q: () => "매월 120만원씩 꼬박꼬박 받으려면 너는 얼마를 내야 하는지 궁금하지 않아? 내가 알려줄까?", a: ["네, 알려주세요", "얼마나 저렴한가요?"], r: () => "그래, 지금 바로 확인해 봐. 근데 가입이 좀 까다롭거든? 그때의 너를 위해 솔직하게 대답해 줘야 해." },
-            { q: (name) => { const n = Josa.nameOnly(name); const j = Josa.get(n, "아야"); return `지직- ${n}${j} 잘 들어. 5년 이내에 치매나 뇌혈관 질환, 뇌손상 같은 거 앓은 적 있었어?`; }, a: ["전혀 없었어요", "병력이 있어요"], r: (name, j) => { const n = Josa.nameOnly(name); return `${n}${j}, 병력이 있으면 거절될 확률이 높지만 배우자 가입이나 가족요양 급여 같은 대안도 있으니 포기하진 마.`; } },
-            { q: () => "최근 2년 이내에 어디 아파서 입원하거나 수술한 적은 없었지? 지직-", a: ["전혀 없었어요", "수술/입원 했어요"], r: () => "응, 만약 이력이 있다면 심사를 더 자세히 해봐야 해. 그래도 너무 걱정하진 말고 일단 신호를 끝까지 받아." },
-            { q: () => "마지막이야! 최근 3년 내 보험금 청구 이력이 5번 넘어? 너무 자주 병원 다닌 건 아니지?", a: ["5번 안 돼요", "5번 넘어요"], r: () => "청구 5회 이상은 사실 큰 문제는 아냐. 다만 보험금 탄 금액이 너무 크면 확인이 필요해." },
-            { q: (name, year) => { const n = Josa.nameOnly(name); const j = Josa.get(n, "아야"); return `지직- ${n}${j}... ${year}년은 먼 미래 같지? 하지만 눈 깜짝할 새 온다. 지금 이 혜택들, 보험사들이 매달 줄이고 있어. 내 시간대에는 이런 조건 아예 없거든. 미루지 마!`; }, isFinal: true }
-        ];
-
-        async function renderNarrative() {
-            showStatic(); await new Promise(r => setTimeout(r, 600)); hideStatic();
-            const data = scenario[currentIdx];
-            const container = document.getElementById('narrative-container');
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            updateProgress();
-            const displayQ = (currentIdx === 0 && data.customQ) ? data.customQ : data.q(userName, futureYear, targetAge, josa);
-            const html = `
-                <div class="panel active">
-                    <div class="max-w-wrap flex flex-col py-6">
-                        <div class="radio-display mb-6">
-                            <div class="ai-badge"><i class="fas fa-signal mr-1"></i> SIGNAL DECODED</div>
-                            <div id="type-q" class="text-header text-center"></div>
-                            <div class="wave-container"><svg class="wave-svg" viewBox="0 0 400 60"><path id="freq-path-${currentIdx}" class="dynamic-path" d="M0 30 L 400 30" /></svg></div>
-                        </div>
-                        <div id="choice-btns" class="space-y-3">${data.isFinal ? renderFinalForm() : renderAnsBtns(data.a)}</div>
-                        <div id="reaction-box" class="hidden mt-6">
-                            <div class="bg-slate-900 border-l-8 border-cyan-500 p-5 rounded-r-2xl shadow-xl">
-                                <p class="text-cyan-400 font-black text-lg mb-2">${futureYear}년의 당신(${targetAge}세):</p>
-                                <p id="type-r" class="text-body leading-snug"></p>
-                            </div>
-                            <button onclick="goNext()" class="btn-radio bg-cyan-600 border-none py-6 mt-8 w-full">다음 무전 듣기 <i class="fas fa-chevron-right ml-2"></i></button>
-                        </div>
-                    </div>
-                </div>`;
-            container.innerHTML = html;
-            window.scrollTo({ top: 0, behavior: 'instant' });
-            typeEffect('type-q', displayQ);
-        }
-
-        function renderAnsBtns(arr) { return arr.map((t, i) => `<button onclick="handleAns(${i}, '${t}')" class="btn-radio">${t}</button>`).join(''); }
-
-        function renderFinalForm() {
-            fetchAIAdvice();
-            return `
-                <div class="space-y-4">
-                    <div class="form-row">
-                        <select id="sido" class="standard-input" onchange="updateSigungu()">
-                            <option value="">시/도</option>
-                            ${Object.keys(regionData).map(s => `<option value="${s}">${s}</option>`).join('')}
-                        </select>
-                        <select id="sigungu" class="standard-input">
-                            <option value="">시/군/구</option>
-                        </select>
-                    </div>
-                    <div class="gender-group">
-                        <button type="button" onclick="setGender('남성')" id="genM" class="btn-gender">남성</button>
-                        <button type="button" onclick="setGender('여성')" id="genF" class="btn-gender">여성</button>
-                    </div>
-                    <div class="phone-group">
-                        <div class="fixed-010">010</div>
-                        <input type="tel" id="p_mid" maxlength="4" placeholder="1234" class="standard-input phone-input" oninput="autoFocus(this, 'p_last')">
-                        <input type="tel" id="p_last" maxlength="4" placeholder="5678" class="standard-input phone-input">
-                    </div>
-                    <div class="consent-box">
-                        <div class="consent-item"><input type="checkbox" id="agree1"><label for="agree1" class="text-xs">[필수] 개인정보 수집 및 이용 동의</label><span class="view-detail" onclick="openPrivacy(1)">보기</span></div>
-                        <div class="consent-item"><input type="checkbox" id="agree2"><label for="agree2" class="text-xs">[필수] 제3자 제공 동의</label><span class="view-detail" onclick="openPrivacy(2)">보기</span></div>
-                    </div>
-                    <div id="ai-report" class="p-5 bg-orange-950/40 border border-orange-500/50 rounded-2xl">
-                        <p class="text-orange-400 font-black text-sm mb-2">✨ AI 미래 생존 리포트 분석 중...</p>
-                        <p id="ai-advice-text" class="text-xs text-white leading-relaxed">신호를 분석하고 있습니다...</p>
-                    </div>
-                    <button onclick="submitMission()" class="w-full bg-orange-600 py-6 rounded-2xl text-2xl font-black shadow-xl animate-bounce">예상 보험료 확인하기</button>
-                </div>`;
-        }
-
-        function autoFocus(cur, nextId) { if(cur.value.length >= 4) document.getElementById(nextId).focus(); }
-        function setGender(g) { userGender = g; document.getElementById('genM').classList.toggle('active', g === '남성'); document.getElementById('genF').classList.toggle('active', g === '여성'); }
-        function updateSigungu() {
-            const sido = document.getElementById('sido').value; const sS = document.getElementById('sigungu');
-            sS.innerHTML = '<option value="">시/군/구</option>';
-            if (sido && regionData[sido]) regionData[sido].forEach(s => { const o = document.createElement('option'); o.value = s; o.innerText = s; sS.appendChild(o); });
-        }
-        function openPrivacy(t) {
-            const m = document.getElementById('privacyModal'); const c = document.getElementById('modalContent');
-            const txt = {
-                1: `[개인정보 수집 및 이용 동의]\n\n1. 수집주체: (주)파트너스컴퍼니\n2. 수집항목: 이름, 생년월일, 연락처, 거주지역, 성별\n3. 수집목적: 보험상품 안내 및 가입 상담, 이벤트 정보 제공\n4. 보유기간: 목적 달성 후 1년 또는 정보주체의 삭제 요청 시까지`,
-                2: `[제3자 제공 동의]\n\n1. 제공받는 자: 메타리치 파트너스지사\n2. 제공항목: 이름, 생년월일, 연락처, 거주지역, 성별\n3. 제공목적: 맞춤형 보험 설계 및 가입 상담 전문 서비스 제공\n4. 보유기간: 제3자의 목적 달성 시까지`
-            };
-            c.innerText = txt[t]; m.style.display = 'flex';
-        }
-        function closeModal() { document.getElementById('privacyModal').style.display = 'none'; }
-        async function fetchAIAdvice() {
-            const h = userHistory.slice(-3).map(h => h.a).join(', ');
-            const p = `사용자 ${callName}의 최근 병력 답변: ${h}. 이 결과를 분석해서 미래에서 온 자신처럼 따뜻하게 보험 가입 팁을 한 문장으로 조언해줘.`;
-            const adv = await callGemini(p, "당신은 AI 보험 전문가입니다. 2026년의 사용자에게 희망을 주는 조언을 하세요.");
-            if(document.getElementById('ai-advice-text')) document.getElementById('ai-advice-text').innerText = adv || "신호 해독 완료. 전문가가 정밀 리포트를 준비 중입니다.";
-        }
-        function handleAns(idx, text) { userHistory.push({ q: scenario[currentIdx].q.toString(), a: text }); document.getElementById('choice-btns').classList.add('hidden'); document.getElementById('reaction-box').classList.remove('hidden'); typeEffect('type-r', scenario[currentIdx].r(callName, josa)); }
-        function goNext() { currentIdx++; renderNarrative(); }
-        function typeEffect(id, text) { const el = document.getElementById(id); if(!el) return; isTyping = true; let i = 0; el.innerHTML = ""; function typing() { if (i < text.length) { el.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i); i++; setTimeout(typing, 25 + Math.random() * 20); } else { el.innerHTML += '<span class="cursor"></span>'; isTyping = false; } } typing(); }
-        function showStatic() { document.getElementById('static-screen').style.display = 'flex'; }
-        function hideStatic() { document.getElementById('static-screen').style.display = 'none'; }
-        function updateProgress() { document.getElementById('pBar').style.width = ((currentIdx + 1) / scenario.length * 100) + "%"; }
-
-        function submitMission() {
-            const s = document.getElementById('sido').value; const sg = document.getElementById('sigungu').value;
-            const pm = document.getElementById('p_mid').value; const pl = document.getElementById('p_last').value;
-            const a1 = document.getElementById('agree1').checked; const a2 = document.getElementById('agree2').checked;
-            if(!s || !sg) return alert("거주 지역을 선택해 주세요!");
-            if(!userGender) return alert("성별을 선택해 주세요!");
-            if(pm.length < 4 || pl.length < 4) return alert("휴대폰 번호를 정확히 입력해 주세요!");
-            if(!a1 || !a2) return alert("개인정보 동의를 확인해 주세요!");
             
-            let premium = "상담 시 안내";
-            if(userGender === "남성") {
-                if(userAge >= 40 && userAge < 50) premium = "5만원대"; else if(userAge >= 50 && userAge < 60) premium = "6만원대"; else if(userAge >= 60) premium = "7만원대";
-            } else {
-                if(userAge >= 40 && userAge < 50) premium = "7만원대"; else if(userAge >= 50 && userAge < 60) premium = "8만원대"; else if(userAge >= 60) premium = "9만원대";
-            }
-            const n = Josa.nameOnly(userName); const j = Josa.get(n, "아야");
-            document.body.innerHTML = `
-                <div class="min-h-screen flex flex-col items-center justify-center p-8 text-center bg-slate-950 overflow-y-auto">
-                    <div class="antenna-active w-24 h-24 bg-cyan-500 rounded-full flex items-center justify-center mb-8 shadow-2xl">
-                        <i class="fas fa-check text-5xl text-white"></i>
-                    </div>
-                    <h2 class="text-2xl font-black mb-6">전송 성공!</h2>
-                    <div class="premium-card w-full max-w-sm">
-                        <p class="text-slate-400 text-sm mb-2">미래 설계 분석 결과</p>
-                        <p class="text-white text-lg font-bold mb-4">재가요양 보험금 130만원 플랜</p>
-                        <div class="h-px bg-cyan-500/30 w-full mb-4"></div>
-                        <p class="text-slate-400 text-sm">예상 월 보험료</p>
-                        <p class="text-cyan-400 text-4xl font-black mt-2">${premium}</p>
-                    </div>
-                    <p class="text-body text-slate-300 leading-relaxed mb-8">
-                        당신이 바꾼 미래 리포트가 안전하게 전송되었습니다.<br><br>
-                        곧, 메타리치 파트너스지사의 전문가가 연락하여<br>
-                        AI분석 기반의 상세 상담을 도와드릴게요.
-                    </p>
-                    <button onclick="location.reload()" class="text-slate-500 underline text-sm">처음으로 돌아가기</button>
-                </div>`;
+            <div class="bg-gray-800 p-4 rounded-2xl text-[11px] text-gray-300 leading-relaxed text-left mb-6">
+                <strong class="text-yellow-400 block mb-1 text-xs font-black">📢 PIT CREW'S ADVICE:</strong>
+                <span id="aiAdvice">데이터 분석 중...</span>
+            </div>
+
+            <div class="pt-2 text-center opacity-60 border-t border-gray-100">
+                <p class="text-[8px] text-gray-400 text-center">Copyright © 2026 Partnerscompany,co.,ltd. All rights reserved.</p>
+            </div>
+        </div>
+        <button class="kart-btn w-full text-lg mt-4 mb-10" onclick="location.reload()">다시 하기</button>
+    </div>
+
+    <!-- Global Footer -->
+    <div class="global-footer" id="global-footer">
+        <p class="copyright-text">Copyright © 2026 Partnerscompany,co.,ltd. All rights reserved.</p>
+    </div>
+</div>
+
+<script>
+    const BACKEND_URL = 'https://fa-cal.onrender.com/api/submit';
+
+    const racerList = [
+        { id: 'mario', name: '마리오 (리더형)', icon: '🧢', desc: '팀을 이끄는 탁월한 조직 관리자' },
+        { id: 'luigi', name: '루이지 (밸런스)', icon: '🟢', desc: '기본기가 탄탄한 영업인' },
+        { id: 'bowser', name: '쿠퍼 (파워형)', icon: '🔥', desc: '만나면 끝내는 클로징 마스터' },
+        { id: 'yoshi', name: '요시 (스피드)', icon: '🥚', desc: '전화 연결의 신, TA 고수' },
+        { id: 'toad', name: '키노피오 (서포트)', icon: '🍄', desc: '조직의 핵심 조력자' }
+    ];
+
+    const questions = [
+        { id: 'affiliation', title: '현재 소속', text: '현재 어떤 보험사에서 활동중이신가요?', type: 'choice', opts: ['생명보험 (원수사)', '손해보험 (원수사)', 'GA (법인대리점)'] },
+        { id: 'rank', title: '직급', text: '현재 직급을 선택하세요.', type: 'choice', opts: ['팀원', '팀장', '지점장', '본부장'] },
+        { id: 'team_size', title: '조직 규모', text: '산하 팀원은 몇 명인가요?', type: 'input', label: '인원(명)', itype: 'number' },
+        { id: 'career', title: '경력', text: '보험 영업 경력이 어떻게 되나요?', type: 'choice', opts: ['1년 미만', '1~3년', '3~5년', '5~10년', '10년 이상'] },
+        { id: 'income', title: '연봉', text: '작년 원천징수 소득을 입력하세요.', type: 'input', label: '만원', itype: 'number' },
+        { id: 'history', title: '이직', text: '최근 3년 내 보험사 이직 횟수는?', type: 'choice', opts: ['없음', '1회', '2회', '3회~4회', '5회 이상'] },
+        { id: 'style', title: '방식', text: '주력 영업 방식을 선택하세요.', type: 'choice', opts: ['개척영업', '지인/소개영업', 'DB영업', '이관고객영업', '기타'] },
+        { id: 'perf', title: '평균 실적', text: '월 평균 실적 데이터를 입력하세요.', type: 'multi-input', inputs: [{id:'count', label:'월 건수', type:'number', p:'건'}, {id:'premium', label:'월 보험료', type:'number', p:'만원'}] },
+        { id: 'qual', title: '유지율', text: '계약 유지율을 입력해주세요.', type: 'multi-input', inputs: [{id:'p13', label:'13회차 (%)', type:'number', p:'%'}, {id:'p25', label:'25회차 (%)', type:'number', p:'%'}] },
+        { id: 'info', title: '기본 정보', text: '리포트 발급을 위한 정보 입력', type: 'multi-input', inputs: [{id:'userName', label:'이름', type:'text', p:'성함'}, {id:'region', label:'지역', type:'text', p:'활동지역'}] },
+        { id: 'phone', title: '연락처', text: '결과 수신 및 약관 동의', type: 'phone' }
+    ];
+
+    let userData = {};
+    let currentIdx = -1;
+    let radarChart = null;
+
+    function showScreen(id) {
+        document.querySelectorAll('.scene').forEach(el => el.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        if(id === 'screen-result') document.getElementById('global-footer').classList.add('hidden');
+        else document.getElementById('global-footer').classList.remove('hidden');
+    }
+
+    function goToRacerSelect() {
+        showScreen('screen-racer');
+        const list = document.getElementById('racer-list');
+        list.innerHTML = '';
+        racerList.forEach(r => {
+            const el = document.createElement('div');
+            el.className = 'racer-card';
+            el.innerHTML = `<div class="racer-img-box">${r.icon}</div>
+                            <div class="flex-1 text-left">
+                                <h4 class="font-bold text-sm text-gray-800">${r.name}</h4>
+                                <p class="text-[10px] text-gray-500">${r.desc}</p>
+                            </div>`;
+            el.onclick = () => { userData['racer'] = r; startRace(); };
+            list.appendChild(el);
+        });
+    }
+
+    function startRace() { currentIdx = 0; showScreen('screen-q'); renderQuestion(); }
+
+    function renderQuestion() {
+        while (currentIdx < questions.length) {
+            const q = questions[currentIdx];
+            if (q.condition && !q.condition(userData)) { currentIdx++; } else { break; }
         }
-    </script>
+        if (currentIdx >= questions.length) { submitData(); return; }
+
+        const q = questions[currentIdx];
+        const lapNum = currentIdx + 2; 
+        document.getElementById('stepIndicator').innerText = `LAP ${lapNum}`;
+        document.getElementById('q-progress').innerText = `${lapNum} / 22`;
+        document.getElementById('q-desc').innerText = q.text;
+
+        const cArea = document.getElementById('area-choice'), iArea = document.getElementById('area-input');
+        cArea.innerHTML = ''; iArea.innerHTML = '';
+        cArea.classList.add('hidden'); iArea.classList.add('hidden');
+        document.getElementById('btn-next-manual').classList.add('hidden');
+
+        if (q.type === 'choice') {
+            cArea.classList.remove('hidden');
+            q.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn ${userData[q.id] === opt ? 'selected' : ''}`;
+                btn.innerText = opt;
+                btn.onclick = () => { userData[q.id] = opt; currentIdx++; renderQuestion(); };
+                cArea.appendChild(btn);
+            });
+        } else if (q.type === 'multi-input') {
+            iArea.classList.remove('hidden');
+            document.getElementById('btn-next-manual').classList.remove('hidden');
+            q.inputs.forEach(inp => {
+                iArea.innerHTML += `<label class="text-[11px] font-bold text-gray-500 block mb-1">${inp.label}</label><input type="${inp.type}" id="inp_${inp.id}" class="kart-input mb-4" placeholder="${inp.p} 입력..." value="${userData[inp.id] || ''}">`;
+            });
+        } else if (q.type === 'phone') {
+            iArea.classList.remove('hidden');
+            document.getElementById('btn-next-manual').classList.remove('hidden');
+            iArea.innerHTML = `
+                <div class="flex gap-2 items-center justify-center mb-4">
+                    <input type="text" value="010" readonly class="kart-input w-24 bg-gray-100 text-gray-400">
+                    <input type="tel" id="p_body" class="kart-input flex-1" maxlength="8" placeholder="나머지 8자리 숫자">
+                </div>
+                <div class="terms-box">
+                    <div class="flex items-center justify-between font-bold text-[11px]"><label class="flex items-center gap-2 cursor-pointer font-bold text-[10px]"><input type="checkbox" id="agree1" class="w-4 h-4 accent-blue-500"> [필수] 개인정보 수집 및 이용 동의</label></div>
+                </div>
+                <div class="terms-box">
+                    <div class="flex items-center justify-between font-bold text-[11px]"><label class="flex items-center gap-2 cursor-pointer font-bold text-[10px]"><input type="checkbox" id="agree2" class="w-4 h-4 accent-blue-500"> [필수] 제3자 정보 제공 동의</label></div>
+                </div>
+            `;
+        } else {
+            iArea.classList.remove('hidden');
+            document.getElementById('btn-next-manual').classList.remove('hidden');
+            iArea.innerHTML = `<input type="${q.itype || 'text'}" id="q-input" class="kart-input" placeholder="${q.label}" value="${userData[q.id] || ''}">`;
+        }
+    }
+
+    function handleNext() {
+        const q = questions[currentIdx];
+        if (q.type === 'multi-input') {
+            let valid = true;
+            q.inputs.forEach(inp => {
+                const val = document.getElementById(`inp_${inp.id}`).value;
+                if(!val) valid = false; userData[inp.id] = val;
+            });
+            if(!valid) return alert('모든 항목을 입력해 주세요!');
+        } else if (q.type === 'phone') {
+            const body = document.getElementById('p_body').value;
+            const agree1 = document.getElementById('agree1').checked, agree2 = document.getElementById('agree2').checked;
+            if(body.length < 8) return alert('연락처 8자리를 입력해 주세요!');
+            if(!agree1 || !agree2) return alert('약관에 동의하셔야 결과 확인이 가능합니다.');
+            userData['phone'] = `010-${body.substring(0,4)}-${body.substring(4,8)}`;
+        } else if (q.type === 'input') {
+            const val = document.getElementById('q-input').value;
+            if(!val) return alert('내용을 입력해 주세요!'); userData[q.id] = val;
+        }
+        currentIdx++; renderQuestion();
+    }
+
+    function prevStep() { if(currentIdx > 0) { currentIdx--; renderQuestion(); } else { goToRacerSelect(); } }
+
+    async function submitData() {
+        let bonus = 0;
+        const ts = parseInt(userData.team_size || 0);
+        if(ts >= 10) bonus += 5; else if(ts >= 5) bonus += 4; else if(ts >= 3) bonus += 3;
+        const cr = userData.career;
+        if(cr === '1년 미만') bonus -= 2; else if(['3~5년','5~10년','10년 이상'].includes(cr)) bonus += (cr==='10년 이상'?3:cr==='5~10년'?2:1);
+        
+        // [수정] 이직 횟수 가중치 강화 로직 반영
+        const his = userData.history;
+        if (his === '1회') bonus -= 1;
+        else if (his === '2회') bonus -= 3;
+        else if (his === '3회~4회') bonus -= 10;
+        else if (his === '5회 이상') bonus -= 30;
+
+        if(userData.style === 'DB영업') bonus += 3;
+        const prem = parseInt(userData.premium || 0);
+        if(prem >= 100) bonus += 8; else if(prem >= 60) bonus += 5;
+        const p13 = parseInt(userData.p13 || 0);
+        if(p13 > 90) bonus += 3;
+
+        let baseValue;
+        if (userData.career === '1년 미만') {
+            baseValue = 1500; // 신입 베이스 고정
+        } else {
+            let incomeInput = parseInt(userData.income) || 5000;
+            baseValue = incomeInput * 0.55;
+        }
+        const finalVal = Math.round(baseValue * (1 + bonus / 100));
+
+        const nextMonthPay = Math.round(prem * 7.5);
+        const totalYearPay = Math.round(prem * 13.0);
+
+        showScreen('screen-result');
+        document.getElementById('res-racer-icon').innerText = userData.racer.icon;
+        document.getElementById('finalPrice').innerText = finalVal.toLocaleString();
+        
+        const referenceValue = (userData.career === '1년 미만') ? 1500 : (parseInt(userData.income) || 5000);
+        document.getElementById('finalPct').innerText = Math.round((finalVal / referenceValue) * 100);
+        
+        document.getElementById('resNextMonthPay').innerText = nextMonthPay.toLocaleString();
+        document.getElementById('resTotalYearPay').innerText = totalYearPay.toLocaleString();
+        document.getElementById('resRefPremium').innerText = prem.toLocaleString();
+
+        document.getElementById('aiAdvice').innerText = `${userData.userName}님, 분석 결과 당신의 실적 기반 보상 비전은 시장 최상위권입니다. ${bonus}%의 가중치가 당신의 가치를 증명하고 있습니다!`;
+
+        renderRadarChart([Math.min(10, prem/12+2), 8, Math.min(10, p13/10), 5, Math.min(10, ts/1.5+3)]);
+
+        try {
+            const res = await fetch(BACKEND_URL, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...userData, final_bounty: finalVal, timestamp: new Date().toLocaleString() })
+            });
+            const resData = await res.json();
+            if(resData.success) {
+                document.getElementById('res-entry-box').style.display = 'block';
+                document.getElementById('res-entry-no').innerText = resData.entryNo.toString().padStart(3, '0');
+                document.getElementById('scoreDisplay').innerText = resData.entryNo;
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    function renderRadarChart(data) {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        if(radarChart) radarChart.destroy();
+        radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['생산성', '효율성', '유지율', '전문성', '리더십'],
+                datasets: [{
+                    data: data, backgroundColor: 'rgba(0, 157, 253, 0.2)', borderColor: '#009dfd', borderWidth: 2, pointBackgroundColor: '#fff'
+                }]
+            },
+            options: { scales: { r: { min: 0, max: 10, ticks: { display: false } } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
+        });
+    }
+</script>
 </body>
 </html>
